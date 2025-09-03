@@ -1,0 +1,51 @@
+patient_id,first_name,last_name,date_of_birth,phone,email,insurance_carrier,member_id,group_number,patient_type,last_visit_date,preferred_doctor,location
+P001,John,Smith,1985-03-15,555-0101,john.smith@email.com,Blue Cross,BC123456789,GRP001,returning,2024-01-15,Dr. Johnson,Downtown Clinic
+P002,Sarah,Williams,1992-07-22,555-0102,sarah.williams@email.com,Aetna,AET987654321,GRP002,returning,2024-02-10,Dr. Martinez,Uptown Center
+P003,Michael,Brown,1978-11-08,555-0103,michael.brown@email.com,UnitedHealth,UH456789123,GRP003,returning,2024-03-05,Dr. Johnson,Downtown Clinic
+P004,Emily,Davis,1995-05-30,555-0104,emily.davis@email.com,Cigna,CIG789123456,GRP004,new,,Dr. Lee,West Side Clinic
+P005,David,Miller,1988-09-12,555-0105,david.miller@email.com,Blue Cross,BC234567890,GRP001,returning,2024-01-20,Dr. Martinez,Uptown Center
+P006,Jessica,Wilson,1991-02-18,555-0106,jessica.wilson@email.com,Aetna,AET876543210,GRP002,new,,Dr. Johnson,Downtown Clinic
+P007,Christopher,Moore,1983-12-03,555-0107,chris.moore@email.com,UnitedHealth,UH567890234,GRP003,returning,2024-02-28,Dr. Lee,West Side Clinic
+P008,Amanda,Taylor,1990-08-25,555-0108,amanda.taylor@email.com,Humana,HUM345678901,GRP005,new,,Dr. Martinez,Uptown Center
+P009,James,Anderson,1976-04-07,555-0109,james.anderson@email.com,Blue Cross,BC345678901,GRP001,returning,2024-03-12,Dr. Johnson,Downtown Clinic
+P010,Melissa,Thomas,1993-10-14,555-0110,melissa.thomas@email.com,Cigna,CIG890123457,GRP004,new,,Dr. Lee,West Side Clinic
+P011,Robert,Jackson,1987-06-20,555-0111,robert.jackson@email.com,Aetna,AET765432109,GRP002,returning,2024-01-08,Dr. Martinez,Uptown Center
+P012,Lisa,White,1989-01-31,555-0112,lisa.white@email.com,UnitedHealth,UH678901345,GRP003,new,,Dr. Johnson,Downtown Clinic
+P013,William,Harris,1982-09-17,555-0113,william.harris@email.com,Blue Cross,BC456789012,GRP001,returning,2024-02-15,Dr. Lee,West Side Clinic
+P014,Jennifer,Martin,1994-12-09,555-0114,jennifer.martin@email.com,Humana,HUM456789012,GRP005,new,,Dr. Martinez,Uptown Center
+P015,Daniel,Thompson,1986-03-26,555-0115,daniel.thompson@email.com,Cigna,CIG901234568,GRP004,returning,2024-03-01,Dr. Johnson,Downtown Clinic
+P016,Michelle,Garcia,1991-07-13,555-0116,michelle.garcia@email.com,Aetna,AET654321098,GRP002,new,,Dr. Lee,West Side Clinic
+P017,Kevin,Martinez,1979-11-29,555-0117,kevin.martinez@email.com,UnitedHealth,UH789012456,GRP003,returning,2024-01-25,Dr. Martinez,Uptown Center
+P018,Angela,Robinson,1996-04-16,555-0118,angela.robinson@email.com,Blue Cross,BC567890123,GRP001,new,,Dr. Johnson,Downtown Clinic
+P019,Brian,Clark,1984-08-02,555-0119,brian.clark@email.com,Humana,HUM567890123,GRP005,returning,2024-02-20,Dr. Lee,West Side Clinic
+P020,Stephanie,Rodriguez,1992-10-21,555-0120,stephanie.rodriguez@email.com,Cigna,CIG012345679,GRP004,new,,Dr. Martinez,Uptown Center
+P021,Matthew,Lewis,1988-05-08,555-0121,matthew.lewis@email.com,Aetna,AET543210987,GRP002,returning,2024-03-08,Dr. Johnson,Downtown Clinic
+P022,Nicole,Lee,1993-01-15,555-0122,nicole.lee@email.com,UnitedHealth,UH890123567,GRP003,new,,Dr. Lee,West Side Clinic
+P023,Ryan,Walker,1981-09-27,555-0123,ryan.walker@email.com,Blue Cross,BC678901234,GRP001,returning,2024-01-30,Dr. Martinez,Uptown Center
+P024,Amy,Hall,1995-06-12,555-0124,amy.hall@email.com,Humana,HUM678901234,GRP005,new,,Dr. Johnson,Downtown Clinic
+P025,Thomas,Allen,1987-02-04,555-0125,thomas.allen@email.com,Cigna,CIG123456780,GRP004,returning,2024-02-25,Dr. Lee,West Side Clinic
+P026,Kimberly,Young,1990-12-19,555-0126,kimberly.young@email.com,Aetna,AET432109876,GRP002,new,,Dr. Martinez,Uptown Center
+P027,Steven,King,1985-08-11,555-0127,steven.king@email.com,UnitedHealth,UH901234678,GRP003,returning,2024-03-15,Dr. Johnson,Downtown Clinic
+P028,Laura,Wright,1994-04-28,555-0128,laura.wright@email.com,Blue Cross,BC789012345,GRP001,new,,Dr. Lee,West Side Clinic
+P029,Andrew,Lopez,1983-11-06,555-0129,andrew.lopez@email.com,Humana,HUM789012345,GRP005,returning,2024-01-12,Dr. Martinez,Uptown Center
+P030,Rachel,Hill,1992-07-23,555-0130,rachel.hill@email.com,Cigna,CIG234567891,GRP004,new,,Dr. Johnson,Downtown Clinic
+P031,Joshua,Green,1989-03-10,555-0131,joshua.green@email.com,Aetna,AET321098765,GRP002,returning,2024-02-05,Dr. Lee,West Side Clinic
+P032,Susan,Adams,1986-09-16,555-0132,susan.adams@email.com,UnitedHealth,UH012345789,GRP003,new,,Dr. Martinez,Uptown Center
+P033,Mark,Baker,1991-05-03,555-0133,mark.baker@email.com,Blue Cross,BC890123456,GRP001,returning,2024-03-20,Dr. Johnson,Downtown Clinic
+P034,Karen,Gonzalez,1988-01-20,555-0134,karen.gonzalez@email.com,Humana,HUM890123456,GRP005,new,,Dr. Lee,West Side Clinic
+P035,Richard,Nelson,1984-10-07,555-0135,richard.nelson@email.com,Cigna,CIG345678902,GRP004,returning,2024-01-05,Dr. Martinez,Uptown Center
+P036,Maria,Carter,1993-06-24,555-0136,maria.carter@email.com,Aetna,AET210987654,GRP002,new,,Dr. Johnson,Downtown Clinic
+P037,Charles,Mitchell,1987-02-11,555-0137,charles.mitchell@email.com,UnitedHealth,UH123456890,GRP003,returning,2024-02-18,Dr. Lee,West Side Clinic
+P038,Donna,Perez,1995-08-28,555-0138,donna.perez@email.com,Blue Cross,BC901234567,GRP001,new,,Dr. Martinez,Uptown Center
+P039,Paul,Roberts,1982-12-15,555-0139,paul.roberts@email.com,Humana,HUM901234567,GRP005,returning,2024-03-10,Dr. Johnson,Downtown Clinic
+P040,Nancy,Turner,1990-04-01,555-0140,nancy.turner@email.com,Cigna,CIG456789013,GRP004,new,,Dr. Lee,West Side Clinic
+P041,Anthony,Phillips,1989-11-18,555-0141,anthony.phillips@email.com,Aetna,AET109876543,GRP002,returning,2024-01-22,Dr. Martinez,Uptown Center
+P042,Carol,Campbell,1986-07-05,555-0142,carol.campbell@email.com,UnitedHealth,UH234567901,GRP003,new,,Dr. Johnson,Downtown Clinic
+P043,Kenneth,Parker,1994-03-22,555-0143,kenneth.parker@email.com,Blue Cross,BC012345678,GRP001,returning,2024-02-12,Dr. Lee,West Side Clinic
+P044,Sandra,Evans,1991-09-09,555-0144,sandra.evans@email.com,Humana,HUM012345678,GRP005,new,,Dr. Martinez,Uptown Center
+P045,Donald,Edwards,1985-05-26,555-0145,donald.edwards@email.com,Cigna,CIG567890124,GRP004,returning,2024-03-05,Dr. Johnson,Downtown Clinic
+P046,Betty,Collins,1988-01-13,555-0146,betty.collins@email.com,Aetna,AET098765432,GRP002,new,,Dr. Lee,West Side Clinic
+P047,George,Stewart,1992-10-30,555-0147,george.stewart@email.com,UnitedHealth,UH345678012,GRP003,returning,2024-01-18,Dr. Martinez,Uptown Center
+P048,Helen,Sanchez,1987-06-17,555-0148,helen.sanchez@email.com,Blue Cross,BC123456789,GRP001,new,,Dr. Johnson,Downtown Clinic
+P049,Frank,Morris,1983-02-03,555-0149,frank.morris@email.com,Humana,HUM123456789,GRP005,returning,2024-02-22,Dr. Lee,West Side Clinic
+P050,Linda,Rogers,1996-12-20,555-0150,linda.rogers@email.com,Cigna,CIG678901235,GRP004,new,,Dr. Martinez,Uptown Center

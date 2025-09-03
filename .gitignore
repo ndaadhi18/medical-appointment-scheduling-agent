@@ -1,1 +1,7 @@
 .env
+chat_interface.png
+confirmation.png
+excel-export.png
+test_gemini.py
+test_streamlit.py
+test_system.py

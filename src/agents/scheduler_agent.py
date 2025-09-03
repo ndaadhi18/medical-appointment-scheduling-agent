@@ -5,11 +5,8 @@ from typing import Dict, Any, List
 from datetime import datetime, timedelta
 
 class SchedulerAgent:
-    def __init__(self, schedule_df: pd.DataFrame):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            temperature=0.3
-        )
+    def __init__(self, schedule_df: pd.DataFrame, llm):
+        self.llm = llm
         self.schedule_df = schedule_df
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:

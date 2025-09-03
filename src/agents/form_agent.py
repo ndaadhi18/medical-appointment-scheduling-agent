@@ -3,13 +3,11 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from typing import Dict, Any
 import os
 from datetime import datetime
+import pandas as pd
 
 class FormAgent:
-    def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            temperature=0.3
-        )
+    def __init__(self, llm):
+        self.llm = llm
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Send patient intake forms after confirmation"""
@@ -211,7 +209,6 @@ This is an automated message from our appointment scheduling system.
             # Check if tracking file exists
             if os.path.exists(tracking_file):
                 # Read existing data
-                import pandas as pd
                 try:
                     existing_df = pd.read_csv(tracking_file)
                     new_df = pd.DataFrame([tracking_data])

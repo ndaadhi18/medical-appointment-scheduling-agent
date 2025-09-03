@@ -1,6 +1,7 @@
 from typing import Dict, Any, TypedDict, Annotated
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import BaseMessage
 import pandas as pd
 from datetime import datetime, timedelta
@@ -33,6 +34,7 @@ class MedicalSchedulingWorkflow:
     def __init__(self):
         self.patients_df = self.load_patient_data()
         self.schedule_df = self.load_schedule_data()
+        self.llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3)
         self.workflow = self.create_workflow()
         
     def load_patient_data(self):
@@ -55,44 +57,44 @@ class MedicalSchedulingWorkflow:
     
     def greeting_agent(self, state: AppointmentState) -> AppointmentState:
         """Handle initial patient greeting and data collection"""
-        from src.agents.greeting_agent import GreetingAgent
-        agent = GreetingAgent()
+        from agents.greeting_agent import GreetingAgent
+        agent = GreetingAgent(llm=self.llm)
         return agent.process(state)
     
     def lookup_agent(self, state: AppointmentState) -> AppointmentState:
         """Look up patient in database and determine if new or returning"""
-        from src.agents.lookup_agent import LookupAgent
-        agent = LookupAgent(self.patients_df)
+        from agents.lookup_agent import LookupAgent
+        agent = LookupAgent(patients_df=self.patients_df, llm=self.llm)
         return agent.process(state)
     
     def scheduler_agent(self, state: AppointmentState) -> AppointmentState:
         """Handle appointment scheduling with doctor availability"""
-        from src.agents.scheduler_agent import SchedulerAgent
-        agent = SchedulerAgent(self.schedule_df)
+        from agents.scheduler_agent import SchedulerAgent
+        agent = SchedulerAgent(schedule_df=self.schedule_df, llm=self.llm)
         return agent.process(state)
     
     def insurance_agent(self, state: AppointmentState) -> AppointmentState:
         """Collect and validate insurance information"""
-        from src.agents.insurance_agent import InsuranceAgent
-        agent = InsuranceAgent()
+        from agents.insurance_agent import InsuranceAgent
+        agent = InsuranceAgent(llm=self.llm)
         return agent.process(state)
     
     def confirmation_agent(self, state: AppointmentState) -> AppointmentState:
         """Confirm appointment and export to Excel"""
-        from src.agents.confirmation_agent import ConfirmationAgent
-        agent = ConfirmationAgent()
+        from agents.confirmation_agent import ConfirmationAgent
+        agent = ConfirmationAgent(llm=self.llm)
         return agent.process(state)
     
     def form_agent(self, state: AppointmentState) -> AppointmentState:
         """Send patient intake forms after confirmation"""
-        from src.agents.form_agent import FormAgent
-        agent = FormAgent()
+        from agents.form_agent import FormAgent
+        agent = FormAgent(llm=self.llm)
         return agent.process(state)
     
     def reminder_agent(self, state: AppointmentState) -> AppointmentState:
         """Schedule reminder system"""
-        from src.agents.reminder_agent import ReminderAgent
-        agent = ReminderAgent()
+        from agents.reminder_agent import ReminderAgent
+        agent = ReminderAgent(llm=self.llm)
         return agent.process(state)
     
     def should_continue_to_lookup(self, state: AppointmentState) -> str:

@@ -5,11 +5,8 @@ import re
 from datetime import datetime
 
 class GreetingAgent:
-    def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            temperature=0.3
-        )
+    def __init__(self, llm):
+        self.llm = llm
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Process greeting and collect patient information"""

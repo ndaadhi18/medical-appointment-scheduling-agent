@@ -1,0 +1,2 @@
+patient_id,patient_name,appointment_date,appointment_time,doctor,location,email,phone,reminder_1_date,reminder_1_status,reminder_2_date,reminder_2_status,reminder_3_date,reminder_3_status,forms_completed,appointment_confirmed,cancellation_reason,created_at
+P051,Adarsh S,2024-09-04,09:00,Dr. Johnson,Downtown Clinic,ndaadhi18@gmail.com,8867478871,2024-09-01,scheduled,2024-09-03,scheduled,2024-09-04,scheduled,pending,pending,,2025-09-03 16:12:33

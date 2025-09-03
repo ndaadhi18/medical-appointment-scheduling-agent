@@ -1,0 +1,24 @@
+
+--- 2025-09-03 16:11:16.739238 ---
+EMAIL to ndaadhi18@gmail.com:
+
+APPOINTMENT CONFIRMATION
+
+Dear Adarsh S,
+
+Your appointment has been confirmed:
+
+Date: Wednesday, September 04, 2024
+Time: 09:00 AM
+Doctor: Dr. Johnson
+Location: Downtown Clinic
+Duration: 60 minutes
+
+Please arrive 15 minutes early for check-in.
+
+Thank you,
+Medical Clinic Scheduling System
+
+SMS to 8867478871:
+Appointment confirmed: Wednesday, September 04, 2024 at 09:00 AM with Dr. Johnson at Downtown Clinic. Arrive 15 min early. Reply STOP to opt out.
+--- END ---

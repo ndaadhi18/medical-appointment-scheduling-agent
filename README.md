@@ -2,6 +2,24 @@
 
 An intelligent appointment booking system that automates patient scheduling, reduces no-shows, and streamlines clinic operations using LangGraph multi-agent orchestration and Google Gemini AI.
 
+---
+
+## 📸 Result Screenshots / Videos
+
+Below are screenshots and demo videos showcasing the working application:
+
+### Screenshots
+
+- **Home Screen & Chatbot Interface**
+  ![Home Screen](chat_interface.png)
+
+- **Appointment Confirmation**
+  ![Confirmation](confirmation.png)
+
+- **Excel Export Example**
+  ![Excel Export](excel-export.png)
+
+
 ## 🎯 Project Overview
 
 This AI-powered medical appointment scheduling system provides a complete solution for healthcare facilities to automate their booking process. Built using cutting-edge AI technologies, it handles the entire patient journey from initial contact to appointment confirmation and follow-up reminders.
@@ -275,6 +293,7 @@ For technical support or questions about the implementation:
 - Check the demo.html for feature overview
 - Examine the test cases and examples
 
+## 
 ---
 
 **Built with ❤️ using LangGraph, LangChain, and Google Gemini AI**

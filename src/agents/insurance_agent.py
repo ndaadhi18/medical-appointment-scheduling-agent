@@ -4,11 +4,8 @@ from typing import Dict, Any
 import re
 
 class InsuranceAgent:
-    def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
-            temperature=0.3
-        )
+    def __init__(self, llm):
+        self.llm = llm
         
         # Common insurance carriers
         self.insurance_carriers = [

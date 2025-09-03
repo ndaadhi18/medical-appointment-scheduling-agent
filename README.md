@@ -11,13 +11,13 @@ Below are screenshots and demo videos showcasing the working application:
 ### Screenshots
 
 - **Home Screen & Chatbot Interface**
-  ![Home Screen](chat_interface.png)
+  ![Home Screen](results/chat_interface.png)
 
 - **Appointment Confirmation**
-  ![Confirmation](confirmation.png)
+  ![Confirmation](results/confirmation.png)
 
 - **Excel Export Example**
-  ![Excel Export](excel-export.png)
+  ![Excel Export](results/excel-export.png)
 
 
 ## 🎯 Project Overview

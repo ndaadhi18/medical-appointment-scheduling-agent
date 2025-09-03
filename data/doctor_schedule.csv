@@ -1,0 +1,31 @@
+doctor_name,location,date,start_time,end_time,available_slots,booked_slots
+Dr. Johnson,Downtown Clinic,2024-09-04,09:00,17:00,8,2
+Dr. Johnson,Downtown Clinic,2024-09-05,09:00,17:00,8,1
+Dr. Johnson,Downtown Clinic,2024-09-06,09:00,17:00,8,3
+Dr. Johnson,Downtown Clinic,2024-09-07,09:00,12:00,3,0
+Dr. Johnson,Downtown Clinic,2024-09-09,09:00,17:00,8,1
+Dr. Johnson,Downtown Clinic,2024-09-10,09:00,17:00,8,2
+Dr. Johnson,Downtown Clinic,2024-09-11,09:00,17:00,8,0
+Dr. Johnson,Downtown Clinic,2024-09-12,09:00,17:00,8,1
+Dr. Johnson,Downtown Clinic,2024-09-13,09:00,17:00,8,2
+Dr. Johnson,Downtown Clinic,2024-09-14,09:00,12:00,3,1
+Dr. Martinez,Uptown Center,2024-09-04,10:00,18:00,8,1
+Dr. Martinez,Uptown Center,2024-09-05,10:00,18:00,8,3
+Dr. Martinez,Uptown Center,2024-09-06,10:00,18:00,8,2
+Dr. Martinez,Uptown Center,2024-09-07,10:00,15:00,5,0
+Dr. Martinez,Uptown Center,2024-09-09,10:00,18:00,8,2
+Dr. Martinez,Uptown Center,2024-09-10,10:00,18:00,8,1
+Dr. Martinez,Uptown Center,2024-09-11,10:00,18:00,8,0
+Dr. Martinez,Uptown Center,2024-09-12,10:00,18:00,8,2
+Dr. Martinez,Uptown Center,2024-09-13,10:00,18:00,8,1
+Dr. Martinez,Uptown Center,2024-09-14,10:00,15:00,5,0
+Dr. Lee,West Side Clinic,2024-09-04,08:00,16:00,8,1
+Dr. Lee,West Side Clinic,2024-09-05,08:00,16:00,8,2
+Dr. Lee,West Side Clinic,2024-09-06,08:00,16:00,8,0
+Dr. Lee,West Side Clinic,2024-09-07,08:00,13:00,5,1
+Dr. Lee,West Side Clinic,2024-09-09,08:00,16:00,8,3
+Dr. Lee,West Side Clinic,2024-09-10,08:00,16:00,8,1
+Dr. Lee,West Side Clinic,2024-09-11,08:00,16:00,8,0
+Dr. Lee,West Side Clinic,2024-09-12,08:00,16:00,8,2
+Dr. Lee,West Side Clinic,2024-09-13,08:00,16:00,8,1
+Dr. Lee,West Side Clinic,2024-09-14,08:00,13:00,5,0

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Appointment Scheduling AI - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            padding: 2rem 0;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 2rem 0;
+        }
+        
+        .step {
+            text-align: center;
+            margin: 1rem;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 1rem;
+        }
+        
+        .chat-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .ai-message {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .data-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .data-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .data-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .tech-badge {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .cta-section {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            margin: 2rem 0;
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin: 0 0.5rem;
+        }
+        
+        .status-complete {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-ready {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .workflow-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Medical Appointment Scheduling AI</h1>
+            <p>Intelligent appointment booking system powered by LangGraph & Google Gemini</p>
+            <div style="margin-top: 1rem;">
+                <span class="status-indicator status-complete">✅ System Complete</span>
+                <span class="status-indicator status-ready">🚀 Demo Ready</span>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🎯 Project Overview</h2>
+            <p>This AI-powered medical appointment scheduling system automates patient booking, reduces no-shows, and streamlines clinic operations. Built using advanced AI technologies, it provides a seamless experience for both patients and healthcare providers.</p>
+            
+            <div class="data-section">
+                <div class="data-card">
+                    <span class="data-number">50</span>
+                    <strong>Sample Patients</strong>
+                    <p>Synthetic patient database with complete medical records</p>
+                </div>
+                <div class="data-card">
+                    <span class="data-number">3</span>
+                    <strong>Doctors</strong>
+                    <p>Multiple specialists across different locations</p>
+                </div>
+                <div class="data-card">
+                    <span class="data-number">6</span>
+                    <strong>AI Agents</strong>
+                    <p>Specialized agents for each booking step</p>
+                </div>
+                <div class="data-card">
+                    <span class="data-number">100%</span>
+                    <strong>Automated</strong>
+                    <p>Complete end-to-end automation</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔄 Booking Workflow</h2>
+            <div class="workflow-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Patient Greeting</h4>
+                    <p>Collect name, DOB, and contact info</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Patient Lookup</h4>
+                    <p>Search database for existing records</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Smart Scheduling</h4>
+                    <p>30min (returning) or 60min (new) slots</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h4>Insurance Collection</h4>
+                    <p>Capture carrier, member ID, group</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h4>Confirmation</h4>
+                    <p>Export to Excel, send confirmations</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <h4>Forms & Reminders</h4>
+                    <p>Send intake forms, schedule 3 reminders</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>💬 Conversation Demo</h2>
+            <div class="chat-demo">
+                <div class="message ai-message">
+                    <strong>🤖 AI Assistant:</strong> Hello! Welcome to our medical appointment scheduling system. I'm here to help you book an appointment. What's your full name?
+                </div>
+                <div class="message user-message">
+                    <strong>👤 Patient:</strong> Hi, my name is John Smith
+                </div>
+                <div class="message ai-message">
+                    <strong>🤖 AI Assistant:</strong> Nice to meet you, John Smith! Could you please provide your date of birth in MM/DD/YYYY format?
+                </div>
+                <div class="message user-message">
+                    <strong>👤 Patient:</strong> 03/15/1985
+                </div>
+                <div class="message ai-message">
+                    <strong>🤖 AI Assistant:</strong> Perfect! Let me check our records... I found you in our system! You're a returning patient. Your last visit was on 2024-01-15 with Dr. Johnson. I can schedule you for a 30-minute follow-up appointment. Would you like to see Dr. Johnson again at Downtown Clinic?
+                </div>
+                <div class="message user-message">
+                    <strong>👤 Patient:</strong> Yes, that works for me
+                </div>
+                <div class="message ai-message">
+                    <strong>🤖 AI Assistant:</strong> Excellent! Dr. Johnson has the following 30-minute slots available at Downtown Clinic:<br><br>
+                    1. Wednesday, September 4, 2024 at 09:00 AM<br>
+                    2. Wednesday, September 4, 2024 at 10:30 AM<br>
+                    3. Thursday, September 5, 2024 at 02:00 PM<br><br>
+                    Which time slot would you prefer?
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>✨ Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🤖 Multi-Agent Architecture</h3>
+                    <p>6 specialized AI agents handle different aspects of appointment booking using LangGraph orchestration.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Smart Patient Detection</h3>
+                    <p>Automatically identifies new vs returning patients and adjusts appointment duration accordingly.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📅 Calendar Integration</h3>
+                    <p>Real-time doctor availability checking with automated slot management.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💳 Insurance Processing</h3>
+                    <p>Streamlined insurance information collection and validation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Form Automation</h3>
+                    <p>Automatic distribution of patient intake forms after booking confirmation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔔 Smart Reminders</h3>
+                    <p>3-tier reminder system with form completion and confirmation tracking.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🛠️ Technical Implementation</h2>
+            <div class="tech-stack">
+                <span class="tech-badge">LangGraph</span>
+                <span class="tech-badge">LangChain</span>
+                <span class="tech-badge">Google Gemini</span>
+                <span class="tech-badge">Streamlit</span>
+                <span class="tech-badge">Pandas</span>
+                <span class="tech-badge">Python</span>
+                <span class="tech-badge">Excel Export</span>
+                <span class="tech-badge">CSV Processing</span>
+            </div>
+            
+            <h3>🏗️ System Architecture</h3>
+            <ul style="margin: 1rem 0; padding-left: 2rem;">
+                <li><strong>LangGraph Workflow:</strong> Orchestrates multi-agent conversation flow</li>
+                <li><strong>Agent Framework:</strong> 6 specialized agents for different booking stages</li>
+                <li><strong>Data Integration:</strong> CSV patient database and Excel schedule management</li>
+                <li><strong>State Management:</strong> Persistent conversation state across agent handoffs</li>
+                <li><strong>Export System:</strong> Automated Excel report generation for admin review</li>
+                <li><strong>Notification System:</strong> Simulated email and SMS confirmations</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h2>📊 System Data</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>👥 Patient Database</h3>
+                    <p><strong>50 synthetic patients</strong> with complete profiles including contact info, insurance details, and medical history.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🏥 Doctor Schedules</h3>
+                    <p><strong>3 doctors across 3 locations</strong> with realistic availability patterns and booking slots.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Intake Forms</h3>
+                    <p><strong>New Patient Intake Form (PDF)</strong> automatically sent to new patients after confirmation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📈 Admin Reports</h3>
+                    <p><strong>Excel exports</strong> for appointment confirmations, reminder logs, and system analytics.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2>🚀 Ready to Experience the Demo?</h2>
+            <p>The complete medical appointment scheduling AI system is ready for testing!</p>
+            <div style="margin-top: 1.5rem;">
+                <a href="#" class="btn" onclick="showInstructions()">📱 Run Streamlit Demo</a>
+                <a href="#" class="btn" onclick="showCodeStructure()">💻 View Code Structure</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showInstructions() {
+            alert(`To run the full Streamlit demo:
+
+1. Ensure Python dependencies are installed:
+   pip install langchain langgraph streamlit pandas openpyxl langchain-google-genai
+
+2. Set your Google API key:
+   export GOOGLE_API_KEY="your_api_key_here"
+
+3. Run the Streamlit app:
+   streamlit run src/ui_app.py
+
+4. Open your browser to interact with the AI assistant!
+
+The system includes:
+• Complete conversation flow
+• Real-time patient lookup
+• Appointment scheduling
+• Insurance collection
+• Form distribution
+• Reminder system`);
+        }
+
+        function showCodeStructure() {
+            alert(`📁 Project Structure:
+
+src/
+├── ui_app.py                 # Streamlit chatbot interface
+├── workflow.py               # LangGraph workflow orchestration
+└── agents/
+    ├── greeting_agent.py     # Patient data collection
+    ├── lookup_agent.py       # Database search & patient type detection
+    ├── scheduler_agent.py    # Appointment booking with availability
+    ├── insurance_agent.py    # Insurance information collection
+    ├── confirmation_agent.py # Appointment confirmation & Excel export
+    ├── form_agent.py         # Patient intake form distribution
+    └── reminder_agent.py     # 3-tier reminder system
+
+data/
+├── patients.csv              # 50 synthetic patient records
+├── doctor_schedule.csv       # Doctor availability data
+├── appointment_confirmations.xlsx  # Booking exports
+└── remainders_log.csv        # Reminder tracking
+
+forms/
+└── New Patient Intake Form.pdf  # Patient forms`);
+        }
+    </script>
+</body>
+</html>

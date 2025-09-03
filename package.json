@@ -1,0 +1,36 @@
+{
+  "name": "medical-appointment-scheduling-ai",
+  "version": "1.0.0",
+  "description": "AI-powered medical appointment scheduling system using LangGraph and Streamlit",
+  "main": "src/ui_app.py",
+  "scripts": {
+    "dev": "echo 'This is a Python project. Please use: streamlit run src/ui_app.py'",
+    "test": "echo 'Running system tests...'",
+    "build": "echo 'Building application...'",
+    "start": "echo 'Starting application...'"
+  },
+  "keywords": [
+    "medical",
+    "appointment",
+    "scheduling",
+    "ai",
+    "langgraph",
+    "streamlit",
+    "langchain"
+  ],
+  "author": "Medical AI Assistant",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/medical-ai/appointment-scheduler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/medical-ai/appointment-scheduler/issues"
+  },
+  "homepage": "https://github.com/medical-ai/appointment-scheduler#readme"
+}

@@ -137,9 +137,9 @@ medical-appointment-ai/
    pip install -r requirements.txt
    ```
 
-3. **Set up environment variables**
-   ```bash
-   export GOOGLE_API_KEY="your_google_api_key_here"
+3. **Set up environment variables (.env file)**
+   ```.env
+   GOOGLE_API_KEY="your_google_api_key_here"
    ```
 
 4. **Run the Streamlit application**

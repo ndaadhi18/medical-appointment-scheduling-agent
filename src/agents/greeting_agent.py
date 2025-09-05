@@ -132,9 +132,9 @@ class GreetingAgent:
         
         # Extract doctor preference
         doctor_patterns = {
-            'Dr. Johnson': ['johnson', 'dr johnson', 'dr. johnson'],
-            'Dr. Martinez': ['martinez', 'dr martinez', 'dr. martinez'],
-            'Dr. Lee': ['lee', 'dr lee', 'dr. lee']
+            'Dr. Ramesh': ['ramesh', 'dr ramesh', 'dr. ramesh'],
+            'Dr. Manoj': ['manoj', 'dr manoj', 'dr. manoj'],
+            'Dr. Vivek': ['vivek', 'dr vivek', 'dr. vivek']
         }
         
         for doctor, patterns in doctor_patterns.items():
@@ -145,9 +145,9 @@ class GreetingAgent:
         
         # Extract location preference
         location_patterns = {
-            'Downtown Clinic': ['downtown', 'downtown clinic'],
-            'Uptown Center': ['uptown', 'uptown center'],
-            'West Side Clinic': ['west side', 'westside', 'west side clinic']
+            'Fortis Hospital - Bannerghatta Road': ['fortis', 'bannerghatta', 'bannerghatta road', 'fortis hospital - bannerghatta road'],
+            'People Tree Hospital - Yeshwanthpur': ['people tree', 'yeshwanthpur', 'people tree hospital - yeshwanthpur'],
+            'Sparsh Hospital - Infantry Road': ['sparsh', 'infantry', 'infantry road', 'sparsh hospital - infantry road']
         }
         
         for location, patterns in location_patterns.items():

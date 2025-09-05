@@ -17,7 +17,7 @@ Below are screenshots and demo videos showcasing the working application:
   ![Confirmation](results/confirmation.png)
 
 - **Excel Export Example**
-  ![Excel Export](results/excel-export.png)
+  ![Excel Export](results/excel.png)
 
 - **Email Confirmation Example**
   ![Email Confirmation](results/email_confirmation.png)

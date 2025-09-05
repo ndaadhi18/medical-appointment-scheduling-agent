@@ -28,7 +28,6 @@ share/python-wheels/
 .vscode/
 .idea/
 .env
-data/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -47,7 +46,8 @@ dmypy.json
 # Streamlit
 .streamlit/secrets.toml
 
-
+#data
+data/
 
 # Results (generated images)
 results/

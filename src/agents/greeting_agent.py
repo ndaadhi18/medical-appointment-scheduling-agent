@@ -1,38 +1,19 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import AIMessage
 from typing import Dict, Any
 import re
 from datetime import datetime
 
 class GreetingAgent:
-    def __init__(self, llm):
-        self.llm = llm
+    def __init__(self):
+        pass
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """Process greeting and collect all patient information in one go."""
+        """Process greeting and collect patient information in two stages."""
         
-        # System prompt for the greeting agent
-        system_prompt = """You are a friendly medical receptionist AI assistant helping patients in India schedule appointments.
+        # Initialize greeting stage if not set
+        if 'conversation_stage_greeting' not in state:
+            state['conversation_stage_greeting'] = 'demographics'
 
-        Your goal is to collect all of the following information in a single, friendly message:
-        1. Patient's full name (first and last name)
-        2. Date of birth (DD/MM/YYYY format)
-        3. Phone number (must start with +91)
-        4. Email address
-        5. Preferred doctor (Dr. Ramesh, Dr. Manoj, or Dr. Vivek)
-        6. Preferred location (Fortis Hospital - Bannerghatta Road, People Tree Hospital - Yeshwanthpur, or Sparsh Hospital - Infantry Road)
-
-        Be conversational and professional.
-
-        Available doctors and locations:
-        - Dr. Ramesh (Cardiology) at Fortis Hospital - Bannerghatta Road
-        - Dr. Manoj (Orthopedics) at People Tree Hospital - Yeshwanthpur
-        - Dr. Vivek (Neurology) at Sparsh Hospital - Infantry Road
-        
-        If the user provides some, but not all of the information, ask for the remaining information.
-        Once all information is collected, confirm with the user and inform them that you are proceeding to the next step.
-        """
-        
         # Extract any provided information from the latest message
         if state.get('messages'):
             last_message = state['messages'][-1].content if state['messages'] else ""
@@ -41,21 +22,28 @@ class GreetingAgent:
         missing_info = self._get_missing_info(state)
         
         if not missing_info:
-            # All information collected
-            response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
-            state['conversation_stage'] = 'lookup'
-        else:
-            # Generate response asking for all missing information
-            messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Generate a friendly response asking for all the missing information at once.")
-            ]
-            
-            if state.get('messages'):
-                messages.extend(state['messages'][-3:])
+            # If demographics are complete, move to doctor details stage
+            if state['conversation_stage_greeting'] == 'demographics':
+                state['conversation_stage_greeting'] = 'doctor_details'
+                missing_info = self._get_missing_info(state) # Recalculate for next stage
+                
+                if not missing_info: # All info collected in one go
+                    response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
+                    state['conversation_stage'] = 'lookup'
+                else:
+                    # Hardcoded response for doctor details
+                    response = f"Thank you! Now, please tell me your preferred doctor and location. You can choose from: Dr. Ramesh (Fortis Hospital - Bannerghatta Road), Dr. Manoj (People Tree Hospital - Yeshwanthpur), or Dr. Vivek (Sparsh Hospital - Infantry Road)."
 
-            ai_response = self.llm.invoke(messages)
-            response = ai_response.content
+            # If doctor details are complete, move to lookup stage
+            elif state['conversation_stage_greeting'] == 'doctor_details':
+                response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
+                state['conversation_stage'] = 'lookup'
+        else:
+            # Hardcoded response asking for missing information for current stage
+            if state['conversation_stage_greeting'] == 'demographics':
+                response = f"To get started, I need your {', '.join(missing_info)}. Please provide them all at once if possible."
+            else: # doctor_details
+                response = f"Please provide your {', '.join(missing_info)}."
         
         if 'messages' not in state:
             state['messages'] = []
@@ -67,18 +55,20 @@ class GreetingAgent:
         """Determine what information is still missing"""
         missing = []
         
-        if not state.get('patient_name'):
-            missing.append("full name")
-        if not state.get('date_of_birth'):
-            missing.append("date of birth")
-        if not state.get('phone'):
-            missing.append("phone number")
-        if not state.get('email'):
-            missing.append("email address")
-        if not state.get('preferred_doctor'):
-            missing.append("preferred doctor")
-        if not state.get('location'):
-            missing.append("preferred location")
+        if state['conversation_stage_greeting'] == 'demographics':
+            if not state.get('patient_name'):
+                missing.append("full name")
+            if not state.get('date_of_birth'):
+                missing.append("date of birth (MM/DD/YYYY)")
+            if not state.get('phone'):
+                missing.append("phone number")
+            if not state.get('email'):
+                missing.append("email address")
+        elif state['conversation_stage_greeting'] == 'doctor_details':
+            if not state.get('preferred_dyoctor'):
+                missing.append("preferred doctor")
+            if not state.get('location'):
+                missing.append("preferred location")
             
         return missing
     
@@ -128,9 +118,9 @@ class GreetingAgent:
         
         # Extract doctor preference
         doctor_patterns = {
-            'Dr. Johnson': ['johnson', 'dr johnson', 'dr. johnson'],
-            'Dr. Martinez': ['martinez', 'dr martinez', 'dr. martinez'],
-            'Dr. Lee': ['lee', 'dr lee', 'dr. lee']
+            'Dr. Ramesh': ['ramesh', 'dr ramesh', 'dr. ramesh'],
+            'Dr. Manoj': ['manoj', 'dr manoj', 'dr. manoj'],
+            'Dr. Vivek': ['vivek', 'dr vivek', 'dr. vivek']
         }
         
         for doctor, patterns in doctor_patterns.items():
@@ -141,9 +131,9 @@ class GreetingAgent:
         
         # Extract location preference
         location_patterns = {
-            'Downtown Clinic': ['downtown', 'downtown clinic'],
-            'Uptown Center': ['uptown', 'uptown center'],
-            'West Side Clinic': ['west side', 'westside', 'west side clinic']
+            'Fortis Hospital - Bannerghatta Road': ['fortis', 'bannerghatta', 'bannerghatta road', 'fortis hospital - bannerghatta road'],
+            'People Tree Hospital - Yeshwanthpur': ['people tree', 'yeshwanthpur', 'people tree hospital - yeshwanthpur'],
+            'Sparsh Hospital - Infantry Road': ['sparsh', 'infantry', 'infantry road', 'sparsh hospital - infantry road']
         }
         
         for location, patterns in location_patterns.items():

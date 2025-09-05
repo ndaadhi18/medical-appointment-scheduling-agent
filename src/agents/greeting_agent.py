@@ -9,56 +9,58 @@ class GreetingAgent:
         self.llm = llm
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """Process greeting and collect patient information"""
+        """Process greeting and collect patient information in two stages."""
         
-        # System prompt for the greeting agent
-        system_prompt = """You are a friendly medical receptionist AI assistant helping patients schedule appointments.
-        
-        Your goal is to collect the following information:
-        1. Patient's full name (first and last name)
-        2. Date of birth (MM/DD/YYYY format)
-        3. Phone number
-        4. Email address
-        5. Preferred doctor (Dr. Johnson, Dr. Martinez, or Dr. Lee)
-        6. Preferred location (Downtown Clinic, Uptown Center, or West Side Clinic)
-        
-        Be conversational, friendly, and professional. Ask for one piece of information at a time.
-        If the patient provides multiple pieces of information at once, acknowledge all of them.
-        
-        Available doctors and locations:
-        - Dr. Johnson at Downtown Clinic
-        - Dr. Martinez at Uptown Center  
-        - Dr. Lee at West Side Clinic
-        
-        Validate the date of birth format and ensure all information is complete before proceeding.
-        """
-        
-        # Determine what information we still need
-        missing_info = self._get_missing_info(state)
-        
-        if not missing_info:
-            # All information collected
-            response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
-            state['conversation_stage'] = 'lookup'
-        else:
-            # Generate response asking for missing information
-            messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Current conversation stage: greeting. Generate a friendly response asking for the next piece of missing information.")
-            ]
-            
-            if state.get('messages'):
-                messages.extend(state['messages'][-3:])  # Add recent conversation context
-            
-            ai_response = self.llm.invoke(messages)
-            response = ai_response.content
-        
+        # Initialize greeting stage if not set
+        if 'conversation_stage_greeting' not in state:
+            state['conversation_stage_greeting'] = 'demographics'
+
         # Extract any provided information from the latest message
         if state.get('messages'):
             last_message = state['messages'][-1].content if state['messages'] else ""
             self._extract_patient_info(state, last_message)
+
+        missing_info = self._get_missing_info(state)
         
-        # Add the response to messages
+        if not missing_info:
+            # If demographics are complete, move to doctor details stage
+            if state['conversation_stage_greeting'] == 'demographics':
+                state['conversation_stage_greeting'] = 'doctor_details'
+                missing_info = self._get_missing_info(state) # Recalculate for next stage
+                
+                if not missing_info: # All info collected in one go
+                    response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
+                    state['conversation_stage'] = 'lookup'
+                else:
+                    # Prompt for doctor details
+                    system_prompt = self._get_system_prompt(state['conversation_stage_greeting'])
+                    messages = [
+                        SystemMessage(content=system_prompt),
+                        HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Generate a friendly response asking for all the missing doctor details at once.")
+                    ]
+                    if state.get('messages'):
+                        messages.extend(state['messages'][-3:])
+                    ai_response = self.llm.invoke(messages)
+                    response = ai_response.content
+
+            # If doctor details are complete, move to lookup stage
+            elif state['conversation_stage_greeting'] == 'doctor_details':
+                response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
+                state['conversation_stage'] = 'lookup'
+        else:
+            # Generate response asking for missing information for current stage
+            system_prompt = self._get_system_prompt(state['conversation_stage_greeting'])
+            messages = [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Generate a friendly response asking for all the missing information at once.")
+            ]
+            
+            if state.get('messages'):
+                messages.extend(state['messages'][-3:])
+
+            ai_response = self.llm.invoke(messages)
+            response = ai_response.content
+        
         if 'messages' not in state:
             state['messages'] = []
         state['messages'].append(AIMessage(content=response))
@@ -85,7 +87,7 @@ class GreetingAgent:
         return missing
     
     def _extract_patient_info(self, state: Dict[str, Any], message: str) -> None:
-        """Extract patient information from the message"""
+        """Extract patient information from the message."""
         
         # Extract name (look for patterns like "My name is John Doe" or "I'm Jane Smith")
         name_patterns = [

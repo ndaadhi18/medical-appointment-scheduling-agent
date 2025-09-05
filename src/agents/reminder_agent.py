@@ -1,9 +1,21 @@
+import os
+import sendgrid
+from sendgrid.helpers.mail import Mail
+from twilio.rest import Client
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from typing import Dict, Any, List
-import os
 from datetime import datetime, timedelta
 import json
+
+# SendGrid Configuration
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL")
+
+# Twilio Configuration
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
 class ReminderAgent:
     def __init__(self, llm):
@@ -73,7 +85,7 @@ Is there anything else I can help you with regarding your appointment?"""
         return state
     
     def _schedule_reminders(self, state: Dict[str, Any]) -> bool:
-        """Schedule the 3-reminder system"""
+        """Schedule the 3-reminder system and simulate sending"""
         try:
             # Calculate reminder dates and times
             reminder_schedule = self._calculate_reminder_dates(state['appointment_date'])
@@ -97,11 +109,16 @@ Is there anything else I can help you with regarding your appointment?"""
                     'reminder_type': reminder['type'],
                     'message_template': reminder['message'],
                     'status': 'scheduled',
-                    'sent': False,
+                    'sent': False, # Will be set to True after sending
                     'response_received': False,
                     'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 }
                 reminders.append(reminder_data)
+                
+                # Simulate sending the reminder immediately for demonstration
+                # In a real system, this would be handled by a background scheduler
+                self._send_reminder_notification(reminder_data, state)
+                reminder_data['sent'] = True # Mark as sent after simulation
             
             # Save reminders to log file
             self._save_reminders(reminders)
@@ -114,6 +131,59 @@ Is there anything else I can help you with regarding your appointment?"""
         except Exception as e:
             print(f"Error scheduling reminders: {e}")
             return False
+    
+    def _send_reminder_notification(self, reminder_data: Dict[str, Any], state: Dict[str, Any]) -> None:
+        """Sends a single reminder notification via email and SMS."""
+        patient_email = reminder_data.get('email')
+        patient_phone = reminder_data.get('phone')
+        patient_name = reminder_data.get('patient_name')
+        
+        messages = self.generate_reminder_messages(reminder_data['reminder_type'], state)
+        email_subject = messages['email_subject'] # Assuming generate_reminder_messages returns subject
+        email_body = messages['email']
+        sms_body = messages['sms']
+        
+        # Email (SendGrid)
+        if SENDGRID_API_KEY and SENDGRID_FROM_EMAIL and patient_email:
+            message = Mail(
+                from_email=SENDGRID_FROM_EMAIL,
+                to_emails=patient_email,
+                subject=email_subject,
+                html_content=email_body
+            )
+            try:
+                sg = sendgrid.SendGridAPIClient(SENDGRID_API_KEY)
+                response = sg.send(message)
+                print(f"✅ Reminder email ({reminder_data['reminder_type']}) sent to {patient_email}. Status Code: {response.status_code}")
+            except Exception as e:
+                print(f"❌ Error sending reminder email to {patient_email}: {e}")
+        else:
+            print(f"Skipping reminder email ({reminder_data['reminder_type']}): Missing SendGrid credentials or patient email.")
+            
+        # SMS (Twilio)
+        if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_PHONE_NUMBER and patient_phone:
+            try:
+                client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+                message = client.messages.create(
+                    to=patient_phone,
+                    from_=TWILIO_PHONE_NUMBER,
+                    body=sms_body
+                )
+                print(f"✅ Reminder SMS ({reminder_data['reminder_type']}) sent to {patient_phone}. SID: {message.sid}")
+            except Exception as e:
+                print(f"❌ Error sending reminder SMS to {patient_phone}: {e}")
+        else:
+            print(f"Skipping reminder SMS ({reminder_data['reminder_type']}): Missing Twilio credentials or patient phone number.")
+            
+        # Log actual communications (optional, but good for debugging/auditing)
+        try:
+            with open('data/communication_log.txt', 'a') as f:
+                f.write(f"\n--- {datetime.now()} ---\\n")
+                f.write(f"REMINDER EMAIL ({reminder_data['reminder_type']}) to {patient_email}: Subject: {email_subject}\n")
+                f.write(f"REMINDER SMS ({reminder_data['reminder_type']}) to {patient_phone}: Body: {sms_body}\n")
+                f.write("--- END ---\\n")
+        except Exception as e:
+            print(f"Error logging reminder communication: {e}")
     
     def _calculate_reminder_dates(self, appointment_date: str) -> List[Dict[str, Any]]:
         """Calculate reminder dates based on appointment date"""
@@ -232,7 +302,12 @@ Is there anything else I can help you with regarding your appointment?"""
         except ValueError:
             formatted_time = state['appointment_time']
         
+        email_subject = ""
+        email_msg = ""
+        sms_msg = ""
+
         if reminder_type == 'standard':
+            email_subject = f"Appointment Reminder - {formatted_date}"
             email_msg = f"""
 Subject: Appointment Reminder - {formatted_date}
 
@@ -256,6 +331,7 @@ Medical Clinic
             sms_msg = f"Reminder: Appointment {formatted_date} at {formatted_time} with {state['preferred_doctor']} at {state['location']}. Arrive 15 min early."
         
         elif reminder_type == 'form_check':
+            email_subject = f"Forms Check - Appointment Tomorrow"
             email_msg = f"""
 Subject: Forms Check - Appointment Tomorrow
 
@@ -278,6 +354,7 @@ Medical Clinic
             sms_msg = f"Appointment tomorrow at {formatted_time}. Have you completed your intake forms? Reply: 1=Forms done 2=Not done. Appointment confirmed?"
         
         else:  # confirmation
+            email_subject = f"Final Confirmation - Appointment Today"
             email_msg = f"""
 Subject: Final Confirmation - Appointment Today
 
@@ -298,6 +375,7 @@ Medical Clinic
             sms_msg = f"Appointment TODAY at {formatted_time}. Confirm attendance: YES/NO. If NO, reply with reason. Arrive 15 min early if attending."
         
         return {
+            'email_subject': email_subject, # Added subject for email
             'email': email_msg,
             'sms': sms_msg
         }

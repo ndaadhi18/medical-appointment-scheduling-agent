@@ -97,41 +97,13 @@ class MedicalSchedulingWorkflow:
         agent = ReminderAgent(llm=self.llm)
         return agent.process(state)
     
-    def should_continue_to_lookup(self, state: AppointmentState) -> str:
-        """Decide if we have enough info to proceed to lookup"""
-        if state.get('patient_name') and state.get('date_of_birth'):
-            return "lookup"
-        return "greeting"
-    
-    def should_continue_to_scheduling(self, state: AppointmentState) -> str:
-        """Decide if we can proceed to scheduling"""
-        if state.get('patient_type') and state.get('preferred_doctor'):
-            return "scheduler"
-        return "lookup"
-    
     def should_continue_to_insurance(self, state: AppointmentState) -> str:
-        """Decide if we can proceed to insurance collection"""
-        if state.get('appointment_date') and state.get('appointment_time'):
+        """Decide if we can proceed to insurance collection."""
+        if state.get('appointment_date'):
             return "insurance"
         return "scheduler"
     
-    def should_continue_to_confirmation(self, state: AppointmentState) -> str:
-        """Decide if we can proceed to confirmation"""
-        if state.get('insurance_carrier') and state.get('member_id'):
-            return "confirmation"
-        return "insurance"
     
-    def should_continue_to_forms(self, state: AppointmentState) -> str:
-        """Decide if we can send forms"""
-        if state.get('confirmation_sent'):
-            return "forms"
-        return "confirmation"
-    
-    def should_continue_to_reminders(self, state: AppointmentState) -> str:
-        """Decide if we can schedule reminders"""
-        if state.get('forms_sent'):
-            return "reminders"
-        return "forms"
     
     def create_workflow(self):
         """Create the LangGraph workflow"""
@@ -148,36 +120,18 @@ class MedicalSchedulingWorkflow:
         
         # Add edges
         workflow.add_edge(START, "greeting")
-        workflow.add_conditional_edges(
-            "greeting",
-            self.should_continue_to_lookup,
-            {"greeting": "greeting", "lookup": "lookup"}
-        )
-        workflow.add_conditional_edges(
-            "lookup",
-            self.should_continue_to_scheduling,
-            {"lookup": "lookup", "scheduler": "scheduler"}
-        )
+        workflow.add_edge("greeting", "lookup")
+        workflow.add_edge("lookup", "scheduler")
+        
         workflow.add_conditional_edges(
             "scheduler",
             self.should_continue_to_insurance,
             {"scheduler": "scheduler", "insurance": "insurance"}
         )
-        workflow.add_conditional_edges(
-            "insurance",
-            self.should_continue_to_confirmation,
-            {"insurance": "insurance", "confirmation": "confirmation"}
-        )
-        workflow.add_conditional_edges(
-            "confirmation",
-            self.should_continue_to_forms,
-            {"confirmation": "confirmation", "forms": "forms"}
-        )
-        workflow.add_conditional_edges(
-            "forms",
-            self.should_continue_to_reminders,
-            {"forms": "forms", "reminders": "reminders"}
-        )
+        
+        workflow.add_edge("insurance", "confirmation")
+        workflow.add_edge("confirmation", "forms")
+        workflow.add_edge("forms", "reminders")
         workflow.add_edge("reminders", END)
         
         return workflow.compile()

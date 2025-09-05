@@ -197,9 +197,9 @@ def display_available_doctors():
     st.markdown("### 👨‍⚕️ Available Doctors & Locations")
     
     doctors_info = [
-        {"name": "Dr. Johnson", "location": "Downtown Clinic", "specialties": "General Medicine, Preventive Care"},
-        {"name": "Dr. Martinez", "location": "Uptown Center", "specialties": "Internal Medicine, Chronic Care"},
-        {"name": "Dr. Lee", "location": "West Side Clinic", "specialties": "Family Medicine, Pediatrics"}
+        {"name": "Dr. Ramesh", "location": "Fortis Hospital - Bannerghatta Road", "specialties": "Cardiology"},
+        {"name": "Dr. Manoj", "location": "People Tree Hospital - Yeshwanthpur", "specialties": "Orthopedics"},
+        {"name": "Dr. Vivek", "location": "Sparsh Hospital - Infantry Road", "specialties": "Neurology"}
     ]
     
     for doctor in doctors_info:
@@ -381,8 +381,8 @@ I'm here to help you book an appointment with one of our doctors. I'll need to c
 
 • Your name and date of birth
 • Contact information (phone and email)
-• Preferred doctor and location
-• Insurance information
+
+Once I have this, I'll ask for your preferred doctor and hospital. You can find a list of our doctors and their locations in the right sidebar.
 
 Let's get started! What's your full name?""")
             

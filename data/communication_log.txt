@@ -22,3 +22,13 @@ Medical Clinic Scheduling System
 SMS to 8867478871:
 Appointment confirmed: Wednesday, September 04, 2024 at 09:00 AM with Dr. Johnson at Downtown Clinic. Arrive 15 min early. Reply STOP to opt out.
 --- END ---
+
+--- 2025-09-05 15:29:57.894018 ---\nREMINDER EMAIL (standard) to ndaadhi18@gmail.com: Subject: Appointment Reminder - Scheduled via Calendly
+REMINDER SMS (standard) to 9188747887: Body: Reminder: Appointment Scheduled via Calendly at TBD with Dr. Lee at Uptown Center. Arrive 15 min early.
+--- END ---\n
+--- 2025-09-05 15:29:59.910495 ---\nREMINDER EMAIL (form_check) to ndaadhi18@gmail.com: Subject: Forms Check - Appointment Tomorrow
+REMINDER SMS (form_check) to 9188747887: Body: Appointment tomorrow at TBD. Have you completed your intake forms? Reply: 1=Forms done 2=Not done. Appointment confirmed?
+--- END ---\n
+--- 2025-09-05 15:30:01.277335 ---\nREMINDER EMAIL (confirmation) to ndaadhi18@gmail.com: Subject: Final Confirmation - Appointment Today
+REMINDER SMS (confirmation) to 9188747887: Body: Appointment TODAY at TBD. Confirm attendance: YES/NO. If NO, reply with reason. Arrive 15 min early if attending.
+--- END ---\n

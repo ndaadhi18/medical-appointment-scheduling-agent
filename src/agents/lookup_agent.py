@@ -26,17 +26,21 @@ class LookupAgent:
             if patient_record is not None:
                 # Returning patient found
                 state['patient_type'] = 'returning'
-                state['patient_id'] = patient_record['patient_id']
+                state['patient_id'] = str(patient_record.get('patient_id', '')).strip()
                 
                 # Pre-fill known information
                 if not state.get('phone'):
-                    state['phone'] = patient_record['phone']
+                    # Map CSV column 'phone_number' to state 'phone'
+                    state['phone'] = str(patient_record.get('phone_number', '')).strip()
                 if not state.get('email'):
-                    state['email'] = patient_record['email']
-                if not state.get('preferred_doctor'):
-                    state['preferred_doctor'] = patient_record['preferred_doctor']
-                if not state.get('location'):
-                    state['location'] = patient_record['location']
+                    state['email'] = str(patient_record.get('email', '')).strip()
+                # Optional fields may not exist in CSV; set only if present
+                pref_doc = patient_record.get('preferred_doctor') if isinstance(patient_record, dict) else None
+                loc = patient_record.get('location') if isinstance(patient_record, dict) else None
+                if not state.get('preferred_doctor') and pref_doc:
+                    state['preferred_doctor'] = pref_doc
+                if not state.get('location') and loc:
+                    state['location'] = loc
                 
                 last_visit = patient_record.get('last_visit_date', 'N/A')
                 preferred_doctor = patient_record.get('preferred_doctor', 'N/A')

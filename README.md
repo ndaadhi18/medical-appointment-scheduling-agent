@@ -8,7 +8,7 @@ An intelligent appointment booking system that automates patient scheduling, red
 
 ---
 
-## 📸 Result Screenshots / Videos
+## 📸 Result Screenshots
 
 Below are screenshots and demo videos showcasing the working application:
 

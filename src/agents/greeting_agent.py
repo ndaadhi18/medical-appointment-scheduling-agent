@@ -9,30 +9,12 @@ class GreetingAgent:
         self.llm = llm
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """Process greeting and collect all patient information in one go."""
+        """Process greeting and collect patient information in two stages."""
         
-        # System prompt for the greeting agent
-        system_prompt = """You are a friendly medical receptionist AI assistant helping patients in India schedule appointments.
+        # Initialize greeting stage if not set
+        if 'conversation_stage_greeting' not in state:
+            state['conversation_stage_greeting'] = 'demographics'
 
-        Your goal is to collect all of the following information in a single, friendly message:
-        1. Patient's full name (first and last name)
-        2. Date of birth (DD/MM/YYYY format)
-        3. Phone number (must start with +91)
-        4. Email address
-        5. Preferred doctor (Dr. Ramesh, Dr. Manoj, or Dr. Vivek)
-        6. Preferred location (Fortis Hospital - Bannerghatta Road, People Tree Hospital - Yeshwanthpur, or Sparsh Hospital - Infantry Road)
-
-        Be conversational and professional.
-
-        Available doctors and locations:
-        - Dr. Ramesh (Cardiology) at Fortis Hospital - Bannerghatta Road
-        - Dr. Manoj (Orthopedics) at People Tree Hospital - Yeshwanthpur
-        - Dr. Vivek (Neurology) at Sparsh Hospital - Infantry Road
-        
-        If the user provides some, but not all of the information, ask for the remaining information.
-        Once all information is collected, confirm with the user and inform them that you are proceeding to the next step.
-        """
-        
         # Extract any provided information from the latest message
         if state.get('messages'):
             last_message = state['messages'][-1].content if state['messages'] else ""
@@ -41,11 +23,33 @@ class GreetingAgent:
         missing_info = self._get_missing_info(state)
         
         if not missing_info:
-            # All information collected
-            response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
-            state['conversation_stage'] = 'lookup'
+            # If demographics are complete, move to doctor details stage
+            if state['conversation_stage_greeting'] == 'demographics':
+                state['conversation_stage_greeting'] = 'doctor_details'
+                missing_info = self._get_missing_info(state) # Recalculate for next stage
+                
+                if not missing_info: # All info collected in one go
+                    response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
+                    state['conversation_stage'] = 'lookup'
+                else:
+                    # Prompt for doctor details
+                    system_prompt = self._get_system_prompt(state['conversation_stage_greeting'])
+                    messages = [
+                        SystemMessage(content=system_prompt),
+                        HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Generate a friendly response asking for all the missing doctor details at once.")
+                    ]
+                    if state.get('messages'):
+                        messages.extend(state['messages'][-3:])
+                    ai_response = self.llm.invoke(messages)
+                    response = ai_response.content
+
+            # If doctor details are complete, move to lookup stage
+            elif state['conversation_stage_greeting'] == 'doctor_details':
+                response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
+                state['conversation_stage'] = 'lookup'
         else:
-            # Generate response asking for all missing information
+            # Generate response asking for missing information for current stage
+            system_prompt = self._get_system_prompt(state['conversation_stage_greeting'])
             messages = [
                 SystemMessage(content=system_prompt),
                 HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Generate a friendly response asking for all the missing information at once.")

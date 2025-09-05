@@ -381,8 +381,8 @@ I'm here to help you book an appointment with one of our doctors. I'll need to c
 
 • Your name and date of birth
 • Contact information (phone and email)
-• Preferred doctor and location
-• Insurance information
+
+Once I have this, I'll ask for your preferred doctor and hospital. You can find a list of our doctors and their locations in the right sidebar.
 
 Let's get started! What's your full name?""")
             

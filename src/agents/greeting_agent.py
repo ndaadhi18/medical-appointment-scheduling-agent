@@ -9,31 +9,35 @@ class GreetingAgent:
         self.llm = llm
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """Process greeting and collect patient information"""
+        """Process greeting and collect all patient information in one go."""
         
         # System prompt for the greeting agent
-        system_prompt = """You are a friendly medical receptionist AI assistant helping patients schedule appointments.
-        
-        Your goal is to collect the following information:
+        system_prompt = """You are a friendly medical receptionist AI assistant helping patients in India schedule appointments.
+
+        Your goal is to collect all of the following information in a single, friendly message:
         1. Patient's full name (first and last name)
-        2. Date of birth (MM/DD/YYYY format)
-        3. Phone number
+        2. Date of birth (DD/MM/YYYY format)
+        3. Phone number (must start with +91)
         4. Email address
-        5. Preferred doctor (Dr. Johnson, Dr. Martinez, or Dr. Lee)
-        6. Preferred location (Downtown Clinic, Uptown Center, or West Side Clinic)
-        
-        Be conversational, friendly, and professional. Ask for one piece of information at a time.
-        If the patient provides multiple pieces of information at once, acknowledge all of them.
-        
+        5. Preferred doctor (Dr. Ramesh, Dr. Manoj, or Dr. Vivek)
+        6. Preferred location (Fortis Hospital - Bannerghatta Road, People Tree Hospital - Yeshwanthpur, or Sparsh Hospital - Infantry Road)
+
+        Be conversational and professional.
+
         Available doctors and locations:
-        - Dr. Johnson at Downtown Clinic
-        - Dr. Martinez at Uptown Center  
-        - Dr. Lee at West Side Clinic
+        - Dr. Ramesh (Cardiology) at Fortis Hospital - Bannerghatta Road
+        - Dr. Manoj (Orthopedics) at People Tree Hospital - Yeshwanthpur
+        - Dr. Vivek (Neurology) at Sparsh Hospital - Infantry Road
         
-        Validate the date of birth format and ensure all information is complete before proceeding.
+        If the user provides some, but not all of the information, ask for the remaining information.
+        Once all information is collected, confirm with the user and inform them that you are proceeding to the next step.
         """
         
-        # Determine what information we still need
+        # Extract any provided information from the latest message
+        if state.get('messages'):
+            last_message = state['messages'][-1].content if state['messages'] else ""
+            self._extract_patient_info(state, last_message)
+
         missing_info = self._get_missing_info(state)
         
         if not missing_info:
@@ -41,24 +45,18 @@ class GreetingAgent:
             response = "Perfect! I have all your information. Let me look up your records and check appointment availability."
             state['conversation_stage'] = 'lookup'
         else:
-            # Generate response asking for missing information
+            # Generate response asking for all missing information
             messages = [
                 SystemMessage(content=system_prompt),
-                HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Current conversation stage: greeting. Generate a friendly response asking for the next piece of missing information.")
+                HumanMessage(content=f"Patient needs to provide: {', '.join(missing_info)}. Generate a friendly response asking for all the missing information at once.")
             ]
             
             if state.get('messages'):
-                messages.extend(state['messages'][-3:])  # Add recent conversation context
-            
+                messages.extend(state['messages'][-3:])
+
             ai_response = self.llm.invoke(messages)
             response = ai_response.content
         
-        # Extract any provided information from the latest message
-        if state.get('messages'):
-            last_message = state['messages'][-1].content if state['messages'] else ""
-            self._extract_patient_info(state, last_message)
-        
-        # Add the response to messages
         if 'messages' not in state:
             state['messages'] = []
         state['messages'].append(AIMessage(content=response))
@@ -85,7 +83,7 @@ class GreetingAgent:
         return missing
     
     def _extract_patient_info(self, state: Dict[str, Any], message: str) -> None:
-        """Extract patient information from the message"""
+        """Extract patient information from the message."""
         
         # Extract name (look for patterns like "My name is John Doe" or "I'm Jane Smith")
         name_patterns = [

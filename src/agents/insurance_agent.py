@@ -9,23 +9,25 @@ class InsuranceAgent:
         
         # Common insurance carriers
         self.insurance_carriers = [
-            'Blue Cross', 'Blue Cross Blue Shield', 'BCBS',
-            'Aetna', 'UnitedHealth', 'United Healthcare', 'UHC',
-            'Cigna', 'Humana', 'Kaiser Permanente', 'Kaiser',
-            'Anthem', 'Molina', 'Centene', 'WellCare',
-            'Medicare', 'Medicaid'
+            'Star Health', 'HDFC ERGO', 'ICICI Lombard',
+            'Bajaj Allianz', 'New India Assurance', 'United India Insurance',
+            'Oriental Insurance', 'National Insurance', 'Care Health'
         ]
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Collect and validate insurance information"""
         
         appointment_date = state.get('appointment_date')
-        appointment_time = state.get('appointment_time')
         
-        if not appointment_date or not appointment_time:
+        if not appointment_date:
             response = "I need to confirm your appointment time before collecting insurance information."
             state['conversation_stage'] = 'scheduling'
         else:
+            # Extract any provided insurance info from the latest message
+            if state.get('messages'):
+                last_message = state['messages'][-1].content if state['messages'] else ""
+                self._extract_insurance_info(state, last_message)
+
             # Check what insurance information we still need
             missing_info = self._get_missing_insurance_info(state)
             
@@ -34,11 +36,6 @@ class InsuranceAgent:
                 response = "Perfect! I have all your insurance information. Let me confirm your appointment details."
                 state['conversation_stage'] = 'confirmation'
             else:
-                # Extract any provided insurance info from the latest message
-                if state.get('messages'):
-                    last_message = state['messages'][-1].content if state['messages'] else ""
-                    self._extract_insurance_info(state, last_message)
-                
                 # Generate response asking for missing information
                 response = self._generate_insurance_request(missing_info, state)
                 state['conversation_stage'] = 'insurance'
@@ -69,14 +66,11 @@ class InsuranceAgent:
         if 'insurance carrier' in missing_info:
             return """Now I need to collect your insurance information for billing purposes. 
 
-First, what's your insurance carrier? Common carriers include:
-• Blue Cross Blue Shield (BCBS)
-• Aetna
-• UnitedHealth/United Healthcare  
-• Cigna
-• Humana
-• Kaiser Permanente
-• Medicare/Medicaid
+First, what's your insurance carrier? Some common ones in India are:
+• Star Health
+• HDFC ERGO
+• ICICI Lombard
+• Bajaj Allianz
 
 What insurance do you have?"""
         
@@ -84,14 +78,14 @@ What insurance do you have?"""
             carrier = state.get('insurance_carrier', 'your insurance')
             return f"""Thank you! I have {carrier} as your insurance carrier.
 
-Now I need your Member ID (also called Policy Number or Subscriber ID). This is usually found on the front of your insurance card. It may contain letters and numbers.
+Now I need your Member ID (also called Policy Number or Subscriber ID). This is usually found on the front of your insurance card. For example, it might look like 'HDF1234567' or '123456789'.
 
 What's your Member ID?"""
         
         elif 'group number' in missing_info:
             return """Great! Last piece of insurance information I need is your Group Number. This is also found on your insurance card, often labeled as "Group #" or "GRP #".
 
-If you don't see a group number on your card, or if you have individual insurance, just let me know and I can mark it as "Individual Plan".
+If you don't see a group number on your card, or if you have an individual plan, just let me know and I can mark it as "Individual Plan".
 
 What's your Group Number?"""
         

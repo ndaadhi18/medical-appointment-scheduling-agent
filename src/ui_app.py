@@ -197,9 +197,9 @@ def display_available_doctors():
     st.markdown("### 👨‍⚕️ Available Doctors & Locations")
     
     doctors_info = [
-        {"name": "Dr. Johnson", "location": "Downtown Clinic", "specialties": "General Medicine, Preventive Care"},
-        {"name": "Dr. Martinez", "location": "Uptown Center", "specialties": "Internal Medicine, Chronic Care"},
-        {"name": "Dr. Lee", "location": "West Side Clinic", "specialties": "Family Medicine, Pediatrics"}
+        {"name": "Dr. Ramesh", "location": "Fortis Hospital - Bannerghatta Road", "specialties": "Cardiology"},
+        {"name": "Dr. Manoj", "location": "People Tree Hospital - Yeshwanthpur", "specialties": "Orthopedics"},
+        {"name": "Dr. Vivek", "location": "Sparsh Hospital - Infantry Road", "specialties": "Neurology"}
     ]
     
     for doctor in doctors_info:

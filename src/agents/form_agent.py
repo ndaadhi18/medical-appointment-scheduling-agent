@@ -79,25 +79,70 @@ Now I'll set up your appointment reminder system!"""
         return state
     
     def _send_intake_forms(self, state: Dict[str, Any]) -> bool:
-        """Simulate sending intake forms to patient email"""
+        """Send intake forms to patient email with PDF attachment."""
         try:
-            # Check if the form file exists
+            print("--- Attempting to send intake forms ---")
+            
+            # --- Email Configuration ---
+            sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
+            from_email = os.getenv("SENDGRID_FROM_EMAIL")
+            
+            if not sendgrid_api_key or not from_email:
+                print("❌ Error: SendGrid API key or from_email not found in environment variables.")
+                return False
+            print("✅ SendGrid credentials found.")
+
+            # --- PDF Attachment ---
             form_path = 'forms/New Patient Intake Form.pdf'
-            form_exists = os.path.exists(form_path)
+            print(f"Checking for PDF at: {os.path.abspath(form_path)}")
+            if not os.path.exists(form_path):
+                print(f"❌ Error: Intake form not found at: {form_path}")
+                return False
+            print("✅ PDF form found.")
+
+            import base64
+            with open(form_path, 'rb') as f:
+                pdf_data = f.read()
+            encoded_pdf = base64.b64encode(pdf_data).decode()
+            print("✅ PDF form encoded.")
+
+            # --- Email Content ---
+            email_content = self._generate_form_email(state, form_exists=True)
+            print("✅ Email content generated.")
+
+            # --- SendGrid Email ---
+            from sendgrid import SendGridAPIClient
+            from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
+
+            message = Mail(
+                from_email=from_email,
+                to_emails=state['email'],
+                subject=f"New Patient Intake Forms - Appointment on {state['appointment_date']}",
+                html_content=email_content
+            )
             
-            # Simulate email with form attachment
-            email_content = self._generate_form_email(state, form_exists)
+            attached_pdf = Attachment(
+                FileContent(encoded_pdf),
+                FileName('New_Patient_Intake_Form.pdf'),
+                FileType('application/pdf'),
+                Disposition('attachment')
+            )
+            message.attachment = attached_pdf
+            print("✅ SendGrid Mail object created.")
+
+            sg = SendGridAPIClient(sendgrid_api_key)
+            response = sg.send(message)
             
-            # Log the simulated email
+            print(f"✅ Intake form email sent to {state['email']} with status code: {response.status_code}")
+            
+            # Log and track the form
             self._log_form_email(state, email_content)
-            
-            # Create a reminder in the system about forms sent
             self._create_form_tracking(state)
             
             return True
             
         except Exception as e:
-            print(f"Error sending intake forms: {e}")
+            print(f"❌ Error sending intake forms: {e}")
             return False
     
     def _generate_form_email(self, state: Dict[str, Any], form_exists: bool) -> str:

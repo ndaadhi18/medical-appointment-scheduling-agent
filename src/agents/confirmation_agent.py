@@ -40,11 +40,12 @@ NEXT STEPS:
 📱 SMS reminders will be sent to {state.get('phone', 'your phone')}.
 
 Is there anything else you'd like to know about your upcoming appointment?"""
+
                 
                 state['conversation_stage'] = 'forms'
                 
                 # Simulate sending email and SMS confirmations
-                self._simulate_confirmations(state)
+                self._send_confirmations(state)
                 
             else:
                 response = "I encountered an issue while confirming your appointment. Let me try again or please contact our office directly."
@@ -168,8 +169,8 @@ INSURANCE INFORMATION:
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         return f"CONF-{timestamp}"
     
-    def _simulate_confirmations(self, state: Dict[str, Any]) -> None:
-        """Simulate sending email and SMS confirmations"""
+    def _send_confirmations(self, state: Dict[str, Any]) -> None:
+        """Send email and SMS confirmations"""
         
         # Format appointment details for confirmations
         try:
@@ -184,37 +185,59 @@ INSURANCE INFORMATION:
         except ValueError:
             formatted_time = state['appointment_time']
         
-        # Simulate email confirmation
-        email_content = f"""
-APPOINTMENT CONFIRMATION
+        # Send email confirmation
+        sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
+        from_email = os.getenv("SENDGRID_FROM_EMAIL")
+        if sendgrid_api_key and from_email:
+            from sendgrid import SendGridAPIClient
+            from sendgrid.helpers.mail import Mail
 
-Dear {state['patient_name']},
+            email_content = f"""
+            APPOINTMENT CONFIRMATION
 
-Your appointment has been confirmed:
+            Dear {state['patient_name']},
 
-Date: {formatted_date}
-Time: {formatted_time}
-Doctor: {state['preferred_doctor']}
-Location: {state['location']}
-Duration: {state['appointment_duration']} minutes
+            Your appointment has been confirmed:
 
-Please arrive 15 minutes early for check-in.
+            Date: {formatted_date}
+            Time: {formatted_time}
+            Doctor: {state['preferred_doctor']}
+            Location: {state['location']}
+            Duration: {state['appointment_duration']} minutes
 
-Thank you,
-Medical Clinic Scheduling System
-"""
-        
-        # Simulate SMS confirmation
-        sms_content = f"""Appointment confirmed: {formatted_date} at {formatted_time} with {state['preferred_doctor']} at {state['location']}. Arrive 15 min early. Reply STOP to opt out."""
-        
-        # Log simulated communications
-        try:
-            with open('data/communication_log.txt', 'a') as f:
-                f.write(f"\n--- {datetime.now()} ---\n")
-                f.write(f"EMAIL to {state['email']}:\n{email_content}\n")
-                f.write(f"SMS to {state['phone']}:\n{sms_content}\n")
-                f.write("--- END ---\n")
-        except Exception:
-            pass
-        
-        print(f"✅ Simulated confirmations sent to {state['email']} and {state['phone']}")
+            Please arrive 15 minutes early for check-in.
+
+            Thank you,
+            Medical Clinic Scheduling System
+            """
+            message = Mail(
+                from_email=from_email,
+                to_emails=state['email'],
+                subject='Appointment Confirmation',
+                html_content=email_content)
+            try:
+                sg = SendGridAPIClient(sendgrid_api_key)
+                response = sg.send(message)
+                print(f"✅ Email confirmation sent to {state['email']} with status code: {response.status_code}")
+            except Exception as e:
+                print(f"Error sending email with SendGrid: {e}")
+
+        # Send SMS confirmation (Twilio)
+        twilio_account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+        twilio_auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+        twilio_phone_number = os.getenv("TWILIO_PHONE_NUMBER")
+        if twilio_account_sid and twilio_auth_token and twilio_phone_number:
+            from twilio.rest import Client
+
+            sms_content = f"Appointment confirmed: {formatted_date} at {formatted_time} with {state['preferred_doctor']} at {state['location']}. Arrive 15 min early. Reply STOP to opt out."
+            
+            try:
+                client = Client(twilio_account_sid, twilio_auth_token)
+                message = client.messages.create(
+                    body=sms_content,
+                    from_=twilio_phone_number,
+                    to=state['phone']
+                )
+                print(f"✅ SMS confirmation sent to {state['phone']} with SID: {message.sid}")
+            except Exception as e:
+                print(f"Error sending SMS with Twilio: {e}")

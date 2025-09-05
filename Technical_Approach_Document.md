@@ -34,12 +34,12 @@ The system uses **conditional edges** in LangGraph to determine the next agent b
 **Selected: Option 1 - LangGraph + LangChain**
 
 **Reasons for Selection:**
-1. **Flexibility and Customization**: LangGraph provides fine-grained control over conversation flow and state management
-2. **Scalability**: Easy to add new agents or modify existing workflows without architectural changes
-3. **Integration Capabilities**: LangChain's extensive ecosystem supports CSV/Excel operations, file handling, and API integrations
-4. **Debugging and Monitoring**: Better visibility into agent decision-making and conversation state
-5. **Community Support**: Large community and extensive documentation for troubleshooting
-6. **Medical Domain Adaptability**: No pre-configured templates that might limit medical-specific requirements
+1.  **Flexibility and Customization**: LangGraph provides fine-grained control over conversation flow and state management
+2.  **Scalability**: Easy to add new agents or modify existing workflows without architectural changes
+3.  **Integration Capabilities**: LangChain's extensive ecosystem supports CSV/Excel operations, file handling, and API integrations
+4.  **Debugging and Monitoring**: Better visibility into agent decision-making and conversation state
+5.  **Community Support**: Large community and extensive documentation for troubleshooting
+6.  **Medical Domain Adaptability**: No pre-configured templates that might limit medical-specific requirements
 
 **Technical Advantages:**
 - **Conditional Routing**: Dynamic workflow paths based on conversation context
@@ -51,10 +51,11 @@ The system uses **conditional edges** in LangGraph to determine the next agent b
 
 #### Patient Data Integration
 **CSV Database Simulation (data/patients.csv)**
-- **50 synthetic patient records** with complete medical profiles
-- **Dynamic patient lookup** using pandas DataFrame operations
-- **Real-time patient type classification** (new vs returning)
-- **Data validation** for name matching and date of birth verification
+-   **Enhanced Patient Records**: Now includes `patient_id`, `first_name`, `last_name`, `date_of_birth`, `phone_number`, `email`, `preferred_doctor`, `location`, and `last_visit_date`.
+-   **Dynamic patient lookup** using pandas DataFrame operations.
+-   **Real-time patient type classification** (new vs returning).
+-   **Data validation** for name matching and date of birth verification.
+-   **Pre-filling of known information** for returning patients (phone, email, preferred doctor, location).
 
 **Implementation Approach:**
 ```python
@@ -68,24 +69,18 @@ matches = self.patients_df[
 
 #### Calendar Management Integration
 **Doctor Schedule System (data/doctor_schedule.csv)**
-- **Multi-doctor, multi-location scheduling** with realistic availability patterns
-- **Dynamic slot calculation** based on appointment duration requirements
-- **Real-time availability checking** with booking capacity management
-- **Business logic implementation** for appointment duration (30min/60min)
-
-**Slot Calculation Algorithm:**
-```python
-def calculate_time_slots(self, date, start_time, end_time, duration, available_count):
-    # Generate available slots based on duration and capacity
-    # Handles 30-minute intervals with duration-based booking
-```
+-   **Multi-doctor, multi-location scheduling** with realistic availability patterns.
+-   **Dynamic slot calculation** based on appointment duration requirements.
+-   **Real-time availability checking** with booking capacity management.
+-   **Business logic implementation** for appointment duration (30min/60min).
+-   **Note**: The `Scheduler Agent` currently integrates with Calendly for actual booking and does not directly utilize this file for real-time availability checks. This file serves as a reference for doctor and location options.
 
 #### Data Export and Reporting
 **Excel Integration (openpyxl)**
-- **Real-time appointment export** to Excel for administrative review
-- **Automated confirmation tracking** with unique confirmation IDs
-- **Reminder system logging** with comprehensive tracking
-- **Form distribution monitoring** with completion status
+-   **Real-time appointment export** to Excel for administrative review.
+-   **Automated confirmation tracking** with unique confirmation IDs.
+-   **Reminder system logging** with comprehensive tracking.
+-   **Form distribution monitoring** with completion status.
 
 ### Challenges & Solutions: Key Technical Decisions
 
@@ -119,8 +114,8 @@ class AppointmentState(TypedDict):
 ```python
 # Multiple pattern matching for robustness
 name_patterns = [
-    r"(?:my name is|i'm|i am|name's)\s+([A-Za-z]+\s+[A-Za-z]+)",
-    r"([A-Za-z]+\s+[A-Za-z]+)(?:\s|$)"
+    r"(?:my name is|i'm|i am|name's)\\s+([A-Za-z]+\\s+[A-Za-z]+)",
+    r"([A-Za-z]+\\s+[A-Za-z]+)(?:\\s|$)"
 ]
 ```
 
@@ -141,9 +136,10 @@ name_patterns = [
 **Solution**: State-driven reminder scheduling:
 - **Reminder 1**: Standard appointment reminder
 - **Reminder 2**: Form completion verification + confirmation check
-- **Reminder 3**: Final confirmation + cancellation reason collection
+- **Reminder 3**: Final confirmation + cancellation check
 
 **Technical Implementation**: JSON-based reminder scheduling with date calculations and status tracking.
+**Note**: Reminders are currently simulated to be sent immediately for demonstration purposes. In a production environment, these would be handled by a background scheduler.
 
 ### Data Architecture Decisions
 
@@ -184,10 +180,10 @@ name_patterns = [
 
 ### Future Enhancement Opportunities
 
-1. **Database Integration**: Replace CSV with proper database (PostgreSQL/MySQL)
-2. **Real Calendar Integration**: Connect to actual calendar systems (Google Calendar, Outlook)
-3. **Live Communication**: Implement real SMS/email providers
-4. **Advanced NLP**: Enhanced entity extraction with custom medical language models
-5. **Multi-language Support**: Internationalization for diverse patient populations
+1.  **Database Integration**: Replace CSV with proper database (PostgreSQL/MySQL)
+2.  **Real Calendar Integration**: Connect to actual calendar systems (Google Calendar, Outlook)
+3.  **Live Communication**: Implement real SMS/email providers
+4.  **Advanced NLP**: Enhanced entity extraction with custom medical language models
+5.  **Multi-language Support**: Internationalization for diverse patient populations
 
 This technical approach successfully delivers a production-ready medical appointment scheduling system that demonstrates advanced AI agent orchestration, robust data management, and comprehensive business logic implementation.

@@ -19,6 +19,12 @@ Below are screenshots and demo videos showcasing the working application:
 - **Excel Export Example**
   ![Excel Export](results/excel-export.png)
 
+- **Email Confirmation Example**
+  ![Email Confirmation](results/email_confirmation.png)
+
+- **Form issued to Patient Email**
+  ![SMS Reminder](results/form.png)
+
 
 ## 🎯 Project Overview
 
@@ -27,13 +33,13 @@ This AI-powered medical appointment scheduling system provides a complete soluti
 ### 🚀 Key Features
 
 - **Multi-Agent Architecture**: 6 specialized AI agents handle different booking stages
-- **Smart Patient Detection**: Automatically identifies new vs returning patients
-- **Intelligent Scheduling**: 60-minute slots for new patients, 30-minute for returning
-- **Calendar Integration**: Real-time doctor availability checking
-- **Insurance Processing**: Streamlined insurance information collection
-- **Form Automation**: Automatic patient intake form distribution
-- **Smart Reminders**: 3-tier reminder system with conditional follow-ups
-- **Excel Integration**: Automated appointment confirmations and admin reports
+- **Smart Patient Detection**: Automatically identifies new vs returning patients based on comprehensive patient records.
+- **Intelligent Scheduling**: Determines 60-minute slots for new patients and 30-minute for returning patients, and provides a Calendly link for booking.
+- **Calendar Integration**: Integrates with Calendly for real-time appointment booking.
+- **Insurance Processing**: Streamlined insurance information collection with structured input.
+- **Form Automation**: Automatic patient intake form distribution via email (for new patients).
+- **Smart Reminders**: 3-tier reminder system with conditional follow-ups via simulated email and SMS.
+- **Excel Integration**: Automated appointment confirmations and admin reports.
 
 ## 🏗️ System Architecture
 
@@ -46,57 +52,53 @@ The system uses LangGraph to orchestrate a multi-agent conversation flow:
 
 ### AI Agents
 
-1. **Greeting Agent** (`src/agents/greeting_agent.py`)
-   - Collects patient information (name, DOB, contact info)
-   - Validates data format and completeness
-   - Determines preferred doctor and location
+1.  **Greeting Agent** (`src/agents/greeting_agent.py`)
+    -   Collects patient demographic information (full name, DOB, contact info).
+    -   Extracts preferred doctor and location from user input.
+    -   Validates data format and completeness.
 
-2. **Lookup Agent** (`src/agents/lookup_agent.py`)
-   - Searches patient database for existing records
-   - Determines patient type (new/returning)
-   - Pre-fills known information for returning patients
+2.  **Lookup Agent** (`src/agents/lookup_agent.py`)
+    -   Searches patient database (`data/patients.csv`) for existing records based on name and DOB.
+    -   Determines patient type (new/returning).
+    -   Pre-fills known information (phone, email, preferred doctor, location) for returning patients from their record.
 
-3. **Scheduler Agent** (`src/agents/scheduler_agent.py`)
-   - Checks doctor availability based on preferences
-   - Applies business logic (30/60 minute durations)
-   - Presents available time slots to patients
+3.  **Scheduler Agent** (`src/agents/scheduler_agent.py`)
+    -   Determines appointment duration (30/60 minutes) based on patient type.
+    -   Generates and provides a unique Calendly scheduling link for the patient to book their appointment.
+    -   **Processes booking confirmation**: Waits for user confirmation (e.g., "done", "booked") after the link is provided. Upon confirmation, it attempts to retrieve the booked appointment details from Calendly.
 
-4. **Insurance Agent** (`src/agents/insurance_agent.py`)
-   - Collects insurance carrier, member ID, and group number
-   - Validates insurance information format
-   - Handles various insurance provider formats
+4.  **Insurance Agent** (`src/agents/insurance_agent.py`)
+    -   Collects insurance carrier, member ID, and group number using structured input.
+    -   Validates insurance information format.
 
-5. **Confirmation Agent** (`src/agents/confirmation_agent.py`)
-   - Generates appointment confirmation summary
-   - Exports booking data to Excel for admin review
-   - Simulates email and SMS confirmations
+5.  **Confirmation Agent** (`src/agents/confirmation_agent.py`)
+    -   Generates a comprehensive appointment confirmation summary.
+    -   Exports booking data to `data/appointment_confirmations.xlsx` for administrative review.
+    -   Simulates sending email and SMS confirmations.
 
-6. **Form Agent** (`src/agents/form_agent.py`)
-   - Sends intake forms to new patients
-   - Tracks form distribution and completion
-   - Provides instructions for returning patients
+6.  **Form Agent** (`src/agents/form_agent.py`)
+    -   Sends the New Patient Intake Form (PDF) via email to new patients.
+    -   Tracks form distribution and completion status.
+    -   Provides instructions for returning patients (no new forms needed).
 
-7. **Reminder Agent** (`src/agents/reminder_agent.py`)
-   - Schedules 3-tier reminder system
-   - Tracks form completion and appointment confirmation
-   - Handles cancellation reason collection
+7.  **Reminder Agent** (`src/agents/reminder_agent.py`)
+    -   Schedules a 3-tier reminder system for the appointment.
+    -   **Note**: Reminders are currently simulated to be sent immediately for demonstration purposes. In a production environment, these would be handled by a background scheduler.
+    -   Tracks form completion and appointment confirmation status.
+    -   Handles cancellation reason collection.
 
 ## 📊 Data Sources
 
 ### Patient Database (`data/patients.csv`)
-- 50 synthetic patient records
-- Complete contact and insurance information
-- Patient type classification (new/returning)
-- Medical history and preferences
+-   Synthetic patient records including: `patient_id`, `first_name`, `last_name`, `date_of_birth`, `phone_number`, `email`, `preferred_doctor`, `location`, and `last_visit_date`.
+-   Used for patient type classification (new/returning) and pre-filling information.
 
 ### Doctor Schedule (`data/doctor_schedule.csv`)
-- 3 doctors across 3 locations
-- Daily availability with time slots
-- Booking capacity and current reservations
+-   Contains doctor availability, locations, and time slots.
+-   **Note**: Currently, the `Scheduler Agent` primarily uses Calendly for booking and does not directly utilize this file for real-time availability checks. This file serves as a reference for doctor and location options.
 
 ### Forms (`forms/`)
-- New Patient Intake Form (PDF)
-- Automatically distributed after confirmation
+-   `New Patient Intake Form.pdf`: Automatically distributed to new patients after confirmation.
 
 ## 🛠️ Technical Stack
 
@@ -106,6 +108,9 @@ The system uses LangGraph to orchestrate a multi-agent conversation flow:
 - **Streamlit**: Interactive web interface
 - **Pandas**: Data processing and analysis
 - **OpenPyXL**: Excel file operations
+- **Requests**: For Calendly API interactions
+- **SendGrid**: For simulated email sending
+- **Twilio**: For simulated SMS sending
 
 ## 📁 Project Structure
 
@@ -126,12 +131,27 @@ medical-appointment-ai/
 │   ├── patients.csv              # Patient database (50 records)
 │   ├── doctor_schedule.csv       # Doctor availability
 │   ├── appointment_confirmations.xlsx # Booking exports
-│   └── remainders_log.csv        # Reminder tracking
+│   ├── communication_log.txt     # Log of simulated email/SMS communications
+│   ├── form_emails_log.txt       # Log of simulated form emails
+│   ├── form_tracking.csv         # Tracking of form distribution and completion
+│   ├── scheduled_reminders.json  # Log of scheduled reminders
+│   └── ... (other data files)
 ├── forms/
 │   └── New Patient Intake Form.pdf
 ├── requirements.txt              # Python dependencies
+├── demo_instruction.md           # Instructions for demo
 ├── demo.html                     # Interactive demo page
-└── README.md                     # Project documentation
+├── package-lock.json             # Node.js package lock file
+├── package.json                  # Node.js package file
+├── README.md                     # Project documentation
+├── Technical_Approach_Document.md # Detailed technical approach
+├── test_calendly.py              # Test for Calendly API integration
+├── test_email.py                 # Test for email sending
+├── test_gemini.py                # Test for Gemini LLM integration
+├── test_sms.py                   # Test for SMS sending
+├── test_streamlit.py             # Test for Streamlit UI
+├── test_system.py                # Comprehensive system test
+└── .env                          # Environment variables (API keys)
 ```
 
 ## 🚀 Getting Started
@@ -140,34 +160,44 @@ medical-appointment-ai/
 
 - Python 3.8+
 - Google API key for Gemini
+- Calendly API Key
+- SendGrid API Key
+- Twilio Account SID, Auth Token, and Phone Number
 - Required Python packages (see requirements.txt)
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone [repository-url]
-   cd medical-appointment-ai
-   ```
+1.  **Clone the repository**
+    ```bash
+    git clone [repository-url]
+    cd medical-appointment-ai
+    ```
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+2.  **Install dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-3. **Set up environment variables (.env file)**
-   ```.env
-   GOOGLE_API_KEY="your_google_api_key_here"
-   ```
+3.  **Set up environment variables (.env file)**
+    Create a `.env` file in the root directory with your API keys:
+    ```.env
+    GOOGLE_API_KEY="your_google_api_key_here"
+    CALENDLY_API_KEY="your_calendly_api_key_here"
+    SENDGRID_API_KEY="your_sendgrid_api_key_here"
+    SENDGRID_FROM_EMAIL="your_sendgrid_from_email_here"
+    TWILIO_ACCOUNT_SID="your_twilio_account_sid_here"
+    TWILIO_AUTH_TOKEN="your_twilio_auth_token_here"
+    TWILIO_PHONE_NUMBER="your_twilio_phone_number_here"
+    ```
 
-4. **Run the Streamlit application**
-   ```bash
-   streamlit run src/ui_app.py
-   ```
+4.  **Run the Streamlit application**
+    ```bash
+    streamlit run src/ui_app.py
+    ```
 
-5. **Access the application**
-   - Open your browser to `http://localhost:8501`
-   - Start a conversation with the AI assistant
+5.  **Access the application**
+    - Open your browser to `http://localhost:8501`
+    - Start a conversation with the AI assistant
 
 ### Demo Mode
 
@@ -182,24 +212,27 @@ For a quick overview, open `demo.html` in your browser to see:
 ```
 🤖 AI: Hello! Welcome to our medical appointment scheduling system. What's your full name?
 
-👤 Patient: Hi, my name is John Smith
+👤 Patient: Hi, my name is Aarav Sharma
 
-🤖 AI: Nice to meet you, John Smith! Could you please provide your date of birth?
+🤖 AI: Nice to meet you, Aarav Sharma! Could you please provide your date of birth (MM/DD/YYYY), phone number, and email address?
 
-👤 Patient: 03/15/1985
+👤 Patient: My DOB is 05/15/1985, phone is +919876543210, and email is aarav.sharma@example.com
 
-🤖 AI: Let me check our records... I found you! You're a returning patient. Your last visit was with Dr. Johnson. I can schedule a 30-minute follow-up. Would you like to see Dr. Johnson again?
+🤖 AI: Thank you! Now, please tell me your preferred doctor and location. You can choose from: Dr. Ramesh (Fortis Hospital - Bannerghatta Road), Dr. Manoj (People Tree Hospital - Yeshwanthpur), or Dr. Vivek (Sparsh Hospital - Infantry Road).
 
-👤 Patient: Yes, that works
+👤 Patient: I'd like to see Dr. Ramesh at Fortis Hospital - Bannerghatta Road.
 
-🤖 AI: Great! Dr. Johnson has these slots available:
-1. Wednesday, September 4th at 9:00 AM
-2. Wednesday, September 4th at 10:30 AM
-3. Thursday, September 5th at 2:00 PM
+🤖 AI: Perfect! I have all your information. Let me look up your records and check appointment availability. Welcome back, Aarav Sharma! I found your records. Your last visit was on 2023-01-10 with Dr. Ramesh. I can schedule you for a 30-minute follow-up appointment. Would you like to see Dr. Ramesh again at the same location?
 
-Which would you prefer?
+👤 Patient: Yes, please.
 
-[Conversation continues through insurance, confirmation, and reminder setup...]
+🤖 AI: Please use the following link to book your 30-minute appointment: https://calendly.com/ndaadhi18/returning-patient-follow-up. Please let me know once you have successfully booked the appointment.
+
+👤 Patient: done
+
+🤖 AI: Great! Your appointment details have been captured. Now, let's collect your insurance information.
+
+[Conversation continues through insurance, confirmation, forms, and reminder setup...]
 ```
 
 ## 📈 Business Logic
@@ -285,13 +318,6 @@ This project was developed as part of a medical AI case study. For contributions
 - ✅ **Code Quality**: Clean, documented, executable codebase
 - ✅ **User Experience**: Natural conversation flow and error handling
 - ✅ **Business Logic**: Accurate appointment duration and reminder system
-
-## 📞 Support
-
-For technical support or questions about the implementation:
-- Review the code documentation
-- Check the demo.html for feature overview
-- Examine the test cases and examples
 
 ## 
 ---

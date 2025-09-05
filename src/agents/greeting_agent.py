@@ -65,7 +65,7 @@ class GreetingAgent:
             if not state.get('email'):
                 missing.append("email address")
         elif state['conversation_stage_greeting'] == 'doctor_details':
-            if not state.get('preferred_dyoctor'):
+            if not state.get('preferred_doctor'):
                 missing.append("preferred doctor")
             if not state.get('location'):
                 missing.append("preferred location")

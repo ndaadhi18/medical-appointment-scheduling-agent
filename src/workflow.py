@@ -58,7 +58,7 @@ class MedicalSchedulingWorkflow:
     def greeting_agent(self, state: AppointmentState) -> AppointmentState:
         """Handle initial patient greeting and data collection"""
         from agents.greeting_agent import GreetingAgent
-        agent = GreetingAgent(llm=self.llm)
+        agent = GreetingAgent()
         return agent.process(state)
     
     def lookup_agent(self, state: AppointmentState) -> AppointmentState:

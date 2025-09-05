@@ -1,8 +1,4 @@
+.vscode/
 .env
-test_gemini.py
-test_streamlit.py
-test_system.py
-test_calendly.py
-test_email.py
-test_sms.py
-demo.html
+scheduling-agent/
+

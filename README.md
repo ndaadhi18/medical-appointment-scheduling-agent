@@ -128,7 +128,7 @@ medical-appointment-ai/
 │       ├── form_agent.py         # Form distribution
 │       └── reminder_agent.py     # Reminder system
 ├── data/
-│   ├── patients.csv              # Patient database (50 records)
+│   ├── patients.csv              # Patient database (10 synthetic records)
 │   ├── doctor_schedule.csv       # Doctor availability
 │   ├── appointment_confirmations.xlsx # Booking exports
 │   ├── communication_log.txt     # Log of simulated email/SMS communications
@@ -139,19 +139,8 @@ medical-appointment-ai/
 ├── forms/
 │   └── New Patient Intake Form.pdf
 ├── requirements.txt              # Python dependencies
-├── demo_instruction.md           # Instructions for demo
-├── demo.html                     # Interactive demo page
-├── package-lock.json             # Node.js package lock file
-├── package.json                  # Node.js package file
+
 ├── README.md                     # Project documentation
-├── Technical_Approach_Document.md # Detailed technical approach
-├── test_calendly.py              # Test for Calendly API integration
-├── test_email.py                 # Test for email sending
-├── test_gemini.py                # Test for Gemini LLM integration
-├── test_sms.py                   # Test for SMS sending
-├── test_streamlit.py             # Test for Streamlit UI
-├── test_system.py                # Comprehensive system test
-└── .env                          # Environment variables (API keys)
 ```
 
 ## 🚀 Getting Started

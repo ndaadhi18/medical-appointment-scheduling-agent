@@ -4,6 +4,10 @@ An intelligent appointment booking system that automates patient scheduling, red
 
 ---
 
+**🚀 Deployed Version:** [https://medical-appointment-scheduling-agent-langgraph-orchestration.streamlit.app/](https://medical-appointment-scheduling-agent-langgraph-orchestration.streamlit.app/) - Do check out the deployed version!
+
+---
+
 ## 📸 Result Screenshots / Videos
 
 Below are screenshots and demo videos showcasing the working application:
@@ -116,6 +120,7 @@ The system uses LangGraph to orchestrate a multi-agent conversation flow:
 
 ```
 medical-appointment-ai/
+|__ .streamlit/secrets.toml       # necessary API Keys
 ├── src/
 │   ├── ui_app.py                 # Streamlit chatbot interface
 │   ├── workflow.py               # LangGraph workflow orchestration
@@ -277,7 +282,7 @@ Modify `data/patients.csv` to:
 - HIPAA-compliant data handling practices
 - Secure API key management
 
-## 🚀 Advanced Features
+## 🚀 Advanced Features to try out
 
 ### Multi-Language Support (Future)
 - Configurable language models

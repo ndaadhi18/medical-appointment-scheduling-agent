@@ -6,8 +6,10 @@ from datetime import datetime
 import pandas as pd
 
 class FormAgent:
-    def __init__(self, llm):
+    def __init__(self, llm, sendgrid_api_key: str, sendgrid_from_email: str):
         self.llm = llm
+        self.sendgrid_api_key = sendgrid_api_key
+        self.sendgrid_from_email = sendgrid_from_email
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Send patient intake forms after confirmation"""
@@ -84,10 +86,9 @@ Now I'll set up your appointment reminder system!"""
             print("--- Attempting to send intake forms ---")
             
             # --- Email Configuration ---
-            sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
-            from_email = os.getenv("SENDGRID_FROM_EMAIL")
             
-            if not sendgrid_api_key or not from_email:
+            
+            if not self.sendgrid_api_key or not self.sendgrid_from_email:
                 print("❌ Error: SendGrid API key or from_email not found in environment variables.")
                 return False
             print("✅ SendGrid credentials found.")
@@ -115,7 +116,7 @@ Now I'll set up your appointment reminder system!"""
             from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 
             message = Mail(
-                from_email=from_email,
+                from_email=self.sendgrid_from_email,
                 to_emails=state['email'],
                 subject=f"New Patient Intake Forms - Appointment on {state['appointment_date']}",
                 html_content=email_content
@@ -130,7 +131,7 @@ Now I'll set up your appointment reminder system!"""
             message.attachment = attached_pdf
             print("✅ SendGrid Mail object created.")
 
-            sg = SendGridAPIClient(sendgrid_api_key)
+            sg = SendGridAPIClient(self.sendgrid_api_key)
             response = sg.send(message)
             
             print(f"✅ Intake form email sent to {state['email']} with status code: {response.status_code}")

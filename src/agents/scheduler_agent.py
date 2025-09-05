@@ -7,12 +7,12 @@ from typing import Dict, Any, List
 from datetime import datetime, timedelta
 
 CALENDLY_API_BASE_URL = "https://api.calendly.com"
-CALENDLY_API_KEY = os.getenv("CALENDLY_API_KEY")
 
 class SchedulerAgent:
-    def __init__(self, schedule_df: pd.DataFrame, llm):
+    def __init__(self, schedule_df: pd.DataFrame, llm, calendly_api_key: str):
         self.llm = llm
         self.schedule_df = schedule_df # This will be removed or adapted later
+        self.calendly_api_key = calendly_api_key
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Handle appointment scheduling by generating a Calendly link and confirming booking."""
@@ -55,7 +55,7 @@ class SchedulerAgent:
                 # User confirmed booking, try to fetch details from Calendly
                 try:
                     headers = {
-                        "Authorization": f"Bearer {CALENDLY_API_KEY}",
+                        "Authorization": f"Bearer {self.calendly_api_key}",
                         "Content-Type": "application/json"
                     }
                     user_response = requests.get(f"{CALENDLY_API_BASE_URL}/users/me", headers=headers)
@@ -131,7 +131,7 @@ class SchedulerAgent:
         """Create a single-use scheduling link for the given event type URL."""
         
         headers = {
-            "Authorization": f"Bearer {CALENDLY_API_KEY}",
+            "Authorization": f"Bearer {self.calendly_api_key}",
             "Content-Type": "application/json"
         }
 
@@ -170,7 +170,7 @@ class SchedulerAgent:
         """Get the most recently scheduled event for the user."""
         print(f"DEBUG: _get_latest_scheduled_event called for user_uri: {user_uri}")
         headers = {
-            "Authorization": f"Bearer {CALENDLY_API_KEY}",
+            "Authorization": f"Bearer {self.calendly_api_key}",
             "Content-Type": "application/json"
         }
 

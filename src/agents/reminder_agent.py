@@ -8,18 +8,17 @@ from typing import Dict, Any, List
 from datetime import datetime, timedelta
 import json
 
-# SendGrid Configuration
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL")
 
-# Twilio Configuration
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
 class ReminderAgent:
-    def __init__(self, llm):
+    def __init__(self, llm, sendgrid_api_key: str, sendgrid_from_email: str,
+                 twilio_account_sid: str, twilio_auth_token: str, twilio_phone_number: str):
         self.llm = llm
+        self.sendgrid_api_key = sendgrid_api_key
+        self.sendgrid_from_email = sendgrid_from_email
+        self.twilio_account_sid = twilio_account_sid
+        self.twilio_auth_token = twilio_auth_token
+        self.twilio_phone_number = twilio_phone_number
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Schedule automated reminder system"""
@@ -144,15 +143,15 @@ Is there anything else I can help you with regarding your appointment?"""
         sms_body = messages['sms']
         
         # Email (SendGrid)
-        if SENDGRID_API_KEY and SENDGRID_FROM_EMAIL and patient_email:
+        if self.sendgrid_api_key and self.sendgrid_from_email and patient_email:
             message = Mail(
-                from_email=SENDGRID_FROM_EMAIL,
+                from_email=self.sendgrid_from_email,
                 to_emails=patient_email,
                 subject=email_subject,
                 html_content=email_body
             )
             try:
-                sg = sendgrid.SendGridAPIClient(SENDGRID_API_KEY)
+                sg = sendgrid.SendGridAPIClient(self.sendgrid_api_key)
                 response = sg.send(message)
                 print(f"✅ Reminder email ({reminder_data['reminder_type']}) sent to {patient_email}. Status Code: {response.status_code}")
             except Exception as e:
@@ -161,12 +160,12 @@ Is there anything else I can help you with regarding your appointment?"""
             print(f"Skipping reminder email ({reminder_data['reminder_type']}): Missing SendGrid credentials or patient email.")
             
         # SMS (Twilio)
-        if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN and TWILIO_PHONE_NUMBER and patient_phone:
+        if self.twilio_account_sid and self.twilio_auth_token and self.twilio_phone_number and patient_phone:
             try:
-                client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+                client = Client(self.twilio_account_sid, self.twilio_auth_token)
                 message = client.messages.create(
                     to=patient_phone,
-                    from_=TWILIO_PHONE_NUMBER,
+                    from_=self.twilio_phone_number,
                     body=sms_body
                 )
                 print(f"✅ Reminder SMS ({reminder_data['reminder_type']}) sent to {patient_phone}. SID: {message.sid}")

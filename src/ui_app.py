@@ -3,9 +3,7 @@ import pandas as pd
 from datetime import datetime
 import os
 import sys
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # Add the src directory to the Python path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -99,7 +97,25 @@ st.markdown("""
 def initialize_session_state():
     """Initialize session state variables"""
     if 'workflow' not in st.session_state:
-        st.session_state.workflow = MedicalSchedulingWorkflow()
+        # Retrieve secrets from Streamlit's secrets management
+        google_api_key = st.secrets.get("GOOGLE_API_KEY")
+        calendly_api_key = st.secrets.get("CALENDLY_API_KEY")
+        sendgrid_api_key = st.secrets.get("SENDGRID_API_KEY")
+        sendgrid_from_email = st.secrets.get("SENDGRID_FROM_EMAIL")
+        twilio_account_sid = st.secrets.get("TWILIO_ACCOUNT_SID")
+        twilio_auth_token = st.secrets.get("TWILIO_AUTH_TOKEN")
+        twilio_phone_number = st.secrets.get("TWILIO_PHONE_NUMBER")
+
+        # Pass secrets to the workflow constructor
+        st.session_state.workflow = MedicalSchedulingWorkflow(
+            google_api_key=google_api_key,
+            calendly_api_key=calendly_api_key,
+            sendgrid_api_key=sendgrid_api_key,
+            sendgrid_from_email=sendgrid_from_email,
+            twilio_account_sid=twilio_account_sid,
+            twilio_auth_token=twilio_auth_token,
+            twilio_phone_number=twilio_phone_number
+        )
     
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []

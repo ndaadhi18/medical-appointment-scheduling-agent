@@ -31,10 +31,21 @@ class AppointmentState(TypedDict):
     available_slots: list
     
 class MedicalSchedulingWorkflow:
-    def __init__(self):
+    def __init__(self, google_api_key: str, calendly_api_key: str, sendgrid_api_key: str,
+                 sendgrid_from_email: str, twilio_account_sid: str, twilio_auth_token: str,
+                 twilio_phone_number: str):
         self.patients_df = self.load_patient_data()
         self.schedule_df = self.load_schedule_data()
-        self.llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3, google_api_key=google_api_key)
+        
+        # Store API keys for agents
+        self.calendly_api_key = calendly_api_key
+        self.sendgrid_api_key = sendgrid_api_key
+        self.sendgrid_from_email = sendgrid_from_email
+        self.twilio_account_sid = twilio_account_sid
+        self.twilio_auth_token = twilio_auth_token
+        self.twilio_phone_number = twilio_phone_number
+
         self.workflow = self.create_workflow()
         
     def load_patient_data(self):
@@ -70,7 +81,7 @@ class MedicalSchedulingWorkflow:
     def scheduler_agent(self, state: AppointmentState) -> AppointmentState:
         """Handle appointment scheduling with doctor availability"""
         from agents.scheduler_agent import SchedulerAgent
-        agent = SchedulerAgent(schedule_df=self.schedule_df, llm=self.llm)
+        agent = SchedulerAgent(schedule_df=self.schedule_df, llm=self.llm, calendly_api_key=self.calendly_api_key)
         return agent.process(state)
     
     def insurance_agent(self, state: AppointmentState) -> AppointmentState:
@@ -82,19 +93,19 @@ class MedicalSchedulingWorkflow:
     def confirmation_agent(self, state: AppointmentState) -> AppointmentState:
         """Confirm appointment and export to Excel"""
         from agents.confirmation_agent import ConfirmationAgent
-        agent = ConfirmationAgent(llm=self.llm)
+        agent = ConfirmationAgent(llm=self.llm, sendgrid_api_key=self.sendgrid_api_key, sendgrid_from_email=self.sendgrid_from_email, twilio_account_sid=self.twilio_account_sid, twilio_auth_token=self.twilio_auth_token, twilio_phone_number=self.twilio_phone_number)
         return agent.process(state)
     
     def form_agent(self, state: AppointmentState) -> AppointmentState:
         """Send patient intake forms after confirmation"""
         from agents.form_agent import FormAgent
-        agent = FormAgent(llm=self.llm)
+        agent = FormAgent(llm=self.llm, sendgrid_api_key=self.sendgrid_api_key, sendgrid_from_email=self.sendgrid_from_email)
         return agent.process(state)
     
     def reminder_agent(self, state: AppointmentState) -> AppointmentState:
         """Schedule reminder system"""
         from agents.reminder_agent import ReminderAgent
-        agent = ReminderAgent(llm=self.llm)
+        agent = ReminderAgent(llm=self.llm, sendgrid_api_key=self.sendgrid_api_key, sendgrid_from_email=self.sendgrid_from_email, twilio_account_sid=self.twilio_account_sid, twilio_auth_token=self.twilio_auth_token, twilio_phone_number=self.twilio_phone_number)
         return agent.process(state)
     
     def should_continue_to_insurance(self, state: AppointmentState) -> str:

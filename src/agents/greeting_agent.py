@@ -102,13 +102,20 @@ class GreetingAgent:
             except ValueError:
                 pass
         
-        # Extract phone number
-        phone_pattern = r"(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})"
+        # Extract phone number (Indian format with +91)
+        phone_pattern = r"(\+91[-.\s]?\d{10}|\d{10})"
         phone_match = re.search(phone_pattern, message)
         if phone_match and not state.get('phone'):
-            phone = re.sub(r'[-.\s]', '-', phone_match.group(1))
-            if len(phone.replace('-', '')) == 10:
-                state['phone'] = phone
+            phone = phone_match.group(1)
+            # Extract only digits
+            digits_only = re.sub(r'[^\d]', '', phone)
+            
+            if len(digits_only) == 12 and digits_only.startswith('91'):
+                # +91XXXXXXXXXX format
+                state['phone'] = f"+91{digits_only[2:]}"
+            elif len(digits_only) == 10:
+                # XXXXXXXXXX format (add +91)
+                state['phone'] = f"+91{digits_only}"
         
         # Extract email
         email_pattern = r"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})"

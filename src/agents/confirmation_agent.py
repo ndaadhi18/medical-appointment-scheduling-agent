@@ -6,8 +6,14 @@ import os
 from datetime import datetime
 
 class ConfirmationAgent:
-    def __init__(self, llm):
+    def __init__(self, llm, sendgrid_api_key: str, sendgrid_from_email: str,
+                 twilio_account_sid: str, twilio_auth_token: str, twilio_phone_number: str):
         self.llm = llm
+        self.sendgrid_api_key = sendgrid_api_key
+        self.sendgrid_from_email = sendgrid_from_email
+        self.twilio_account_sid = twilio_account_sid
+        self.twilio_auth_token = twilio_auth_token
+        self.twilio_phone_number = twilio_phone_number
         
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Confirm appointment and export to Excel"""
@@ -186,9 +192,8 @@ INSURANCE INFORMATION:
             formatted_time = state['appointment_time']
         
         # Send email confirmation
-        sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
-        from_email = os.getenv("SENDGRID_FROM_EMAIL")
-        if sendgrid_api_key and from_email:
+        
+        if self.sendgrid_api_key and self.sendgrid_from_email:
             from sendgrid import SendGridAPIClient
             from sendgrid.helpers.mail import Mail
 
@@ -211,31 +216,28 @@ INSURANCE INFORMATION:
             Medical Clinic Scheduling System
             """
             message = Mail(
-                from_email=from_email,
+                from_email=self.sendgrid_from_email,
                 to_emails=state['email'],
                 subject='Appointment Confirmation',
                 html_content=email_content)
             try:
-                sg = SendGridAPIClient(sendgrid_api_key)
+                sg = SendGridAPIClient(self.sendgrid_api_key)
                 response = sg.send(message)
                 print(f"✅ Email confirmation sent to {state['email']} with status code: {response.status_code}")
             except Exception as e:
                 print(f"Error sending email with SendGrid: {e}")
 
         # Send SMS confirmation (Twilio)
-        twilio_account_sid = os.getenv("TWILIO_ACCOUNT_SID")
-        twilio_auth_token = os.getenv("TWILIO_AUTH_TOKEN")
-        twilio_phone_number = os.getenv("TWILIO_PHONE_NUMBER")
-        if twilio_account_sid and twilio_auth_token and twilio_phone_number:
+        if self.twilio_account_sid and self.twilio_auth_token and self.twilio_phone_number:
             from twilio.rest import Client
 
             sms_content = f"Appointment confirmed: {formatted_date} at {formatted_time} with {state['preferred_doctor']} at {state['location']}. Arrive 15 min early. Reply STOP to opt out."
             
             try:
-                client = Client(twilio_account_sid, twilio_auth_token)
+                client = Client(self.twilio_account_sid, self.twilio_auth_token)
                 message = client.messages.create(
                     body=sms_content,
-                    from_=twilio_phone_number,
+                    from_=self.twilio_phone_number,
                     to=state['phone']
                 )
                 print(f"✅ SMS confirmation sent to {state['phone']} with SID: {message.sid}")

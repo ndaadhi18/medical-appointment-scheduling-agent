@@ -167,9 +167,9 @@ medical-appointment-ai/
     pip install -r requirements.txt
     ```
 
-3.  **Set up environment variables (.env file)**
-    Create a `.env` file in the root directory with your API keys:
-    ```.env
+3.  **Set up secrets for Streamlit**
+    Create a `.streamlit/secrets.toml` file in your project's root directory (if it doesn't exist) and add your API keys:
+    ```toml
     GOOGLE_API_KEY="your_google_api_key_here"
     CALENDLY_API_KEY="your_calendly_api_key_here"
     SENDGRID_API_KEY="your_sendgrid_api_key_here"
@@ -178,6 +178,7 @@ medical-appointment-ai/
     TWILIO_AUTH_TOKEN="your_twilio_auth_token_here"
     TWILIO_PHONE_NUMBER="your_twilio_phone_number_here"
     ```
+    **Note**: For local development, Streamlit reads secrets from this file. When deploying to Streamlit Community Cloud, you will need to add these secrets directly in the app's settings on the Streamlit Cloud platform.
 
 4.  **Run the Streamlit application**
     ```bash

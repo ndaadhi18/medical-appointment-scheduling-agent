@@ -1,0 +1,7 @@
+doctor_name,specialization,location,date,start_time,end_time,available_slots,booked_slots
+Dr. Ramesh,Cardiology,Fortis Hospital - Bannerghatta Road,2023-10-26,09:00,17:00,10,2
+Dr. Manoj,Orthopedics,People Tree Hospital - Yeshwanthpur,2023-10-26,10:00,18:00,8,1
+Dr. Vivek,Neurology,Sparsh Hospital - Infantry Road,2023-10-26,09:30,17:30,12,3
+Dr. Ramesh,Cardiology,Fortis Hospital - Bannerghatta Road,2023-10-27,09:00,17:00,10,0
+Dr. Manoj,Orthopedics,People Tree Hospital - Yeshwanthpur,2023-10-27,10:00,18:00,8,0
+Dr. Vivek,Neurology,Sparsh Hospital - Infantry Road,2023-10-27,09:30,17:30,12,0

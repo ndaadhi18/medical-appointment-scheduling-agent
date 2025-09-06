@@ -50,7 +50,7 @@ class SchedulerAgent:
             
             user_last_message = state['messages'][-1].content.lower()
             print(f"DEBUG: User's last message in confirmation check: {user_last_message}")
-            if 'done' in user_last_message or 'booked' in user_last_message or 'scheduled' in user_last_message:
+            if 'done' in user_last_message or 'booked' in user_last_message or 'scheduled' in user_last_message or 'ok' in user_last_message or 'yes' in user_last_message or 'confirm' in user_last_message or 'proceed' in user_last_message:
                 print("DEBUG: User confirmed booking. Attempting to fetch details from Calendly.")
                 # User confirmed booking, try to fetch details from Calendly
                 try:
@@ -105,7 +105,7 @@ class SchedulerAgent:
             }
             event_type_url = calendly_event_urls.get(patient_type)
 
-            if not CALENDLY_API_KEY or not event_type_url:
+            if not self.calendly_api_key or not event_type_url:
                 response = "We are currently experiencing issues with our online scheduling system. Please call the office to book an appointment."
                 state['conversation_stage'] = 'scheduling' # Stay in scheduling
             else:

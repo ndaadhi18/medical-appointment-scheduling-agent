@@ -47,7 +47,6 @@ dmypy.json
 .streamlit/secrets.toml
 
 #data
-data/
 
 # Results (generated images)
 results/

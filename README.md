@@ -5,7 +5,6 @@ An intelligent appointment booking system that automates patient scheduling, red
 ---
 
 **🚀 Deployed Version:** [https://medical-appointment-scheduling-agent-langgraph-orchestration.streamlit.app/](https://medical-appointment-scheduling-agent-langgraph-orchestration.streamlit.app/) - Do check out the deployed version!
-ff
 ---
 
 ## 📸 Result Screenshots
